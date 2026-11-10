@@ -1,0 +1,354 @@
+/* LifeDrop BD - Clean Healthcare Theme
+   Primary: Deep Red (#C62828)
+   Secondary: Dark Navy (#172B4D)
+   Background: Light Grey (#F7F8FA)
+   Card: White (#FFFFFF)
+   Accent: Soft Red (#FCE8E8)
+*/
+
+:root {
+  --primary-red: #C62828;
+  --primary-red-hover: #B71C1C;
+  --dark-navy: #172B4D;
+  --navy-light: #283e5f;
+  --bg-light: #F7F8FA;
+  --card-bg: #FFFFFF;
+  --accent-soft-red: #FCE8E8;
+  --accent-soft-red-border: #F8B4B4;
+  --text-dark: #1E293B;
+  --text-muted: #64748B;
+  --border-subtle: #E2E8F0;
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -2px rgba(0, 0, 0, 0.04);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  background-color: var(--bg-light);
+  color: var(--text-dark);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+main {
+  flex: 1 0 auto;
+}
+
+/* Typography & Links */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+  color: var(--dark-navy);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+a {
+  color: var(--primary-red);
+  text-decoration: none;
+  transition: color 0.15s ease-in-out;
+}
+a:hover {
+  color: var(--primary-red-hover);
+}
+
+/* Navbar */
+.navbar-custom {
+  background-color: #FFFFFF;
+  border-bottom: 1px solid var(--border-subtle);
+  padding: 0.8rem 1rem;
+}
+
+.navbar-brand {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 800;
+  font-size: 1.35rem;
+  color: var(--primary-red) !important;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.navbar-brand .drop-icon {
+  color: var(--primary-red);
+  animation: pulse-drop 2s infinite ease-in-out;
+}
+
+@keyframes pulse-drop {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.12); }
+}
+
+.nav-link {
+  font-weight: 500;
+  color: var(--text-dark) !important;
+  padding: 0.5rem 0.85rem !important;
+  border-radius: var(--radius-sm);
+  transition: all 0.15s ease;
+}
+.nav-link:hover, .nav-link.active {
+  color: var(--primary-red) !important;
+  background-color: var(--accent-soft-red);
+}
+
+/* Buttons */
+.btn-primary-red {
+  background-color: var(--primary-red);
+  border-color: var(--primary-red);
+  color: #FFFFFF;
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  padding: 0.55rem 1.25rem;
+  transition: all 0.15s ease;
+}
+.btn-primary-red:hover, .btn-primary-red:focus {
+  background-color: var(--primary-red-hover);
+  border-color: var(--primary-red-hover);
+  color: #FFFFFF;
+  box-shadow: 0 4px 12px rgba(198, 40, 40, 0.25);
+}
+
+.btn-navy {
+  background-color: var(--dark-navy);
+  border-color: var(--dark-navy);
+  color: #FFFFFF;
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  padding: 0.55rem 1.25rem;
+  transition: all 0.15s ease;
+}
+.btn-navy:hover, .btn-navy:focus {
+  background-color: var(--navy-light);
+  border-color: var(--navy-light);
+  color: #FFFFFF;
+  box-shadow: 0 4px 12px rgba(23, 43, 77, 0.25);
+}
+
+.btn-outline-red {
+  background-color: transparent;
+  border: 1.5px solid var(--primary-red);
+  color: var(--primary-red);
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  padding: 0.5rem 1.2rem;
+  transition: all 0.15s ease;
+}
+.btn-outline-red:hover {
+  background-color: var(--primary-red);
+  color: #FFFFFF;
+}
+
+/* Cards & Panels */
+.card-custom {
+  background-color: var(--card-bg);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.card-custom:hover {
+  box-shadow: var(--shadow-md);
+}
+
+.card-header-custom {
+  background-color: #FFFFFF;
+  border-bottom: 1px solid var(--border-subtle);
+  padding: 1rem 1.25rem;
+  font-weight: 700;
+  color: var(--dark-navy);
+}
+
+/* Stat Cards */
+.stat-card {
+  background: #FFFFFF;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 1.25rem;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.stat-card .stat-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+}
+.stat-icon.red { background-color: var(--accent-soft-red); color: var(--primary-red); }
+.stat-icon.navy { background-color: #E6ECF5; color: var(--dark-navy); }
+.stat-icon.green { background-color: #DCFCE7; color: #166534; }
+.stat-icon.yellow { background-color: #FEF3C7; color: #92400E; }
+.stat-icon.blue { background-color: #E0F2FE; color: #075985; }
+
+.stat-card .stat-value {
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: var(--dark-navy);
+  line-height: 1.2;
+}
+.stat-card .stat-label {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+/* Hero Section */
+.hero-section {
+  background: linear-gradient(135deg, #172B4D 0%, #2A4365 100%);
+  color: #FFFFFF;
+  padding: 4.5rem 0;
+  position: relative;
+  overflow: hidden;
+}
+.hero-section h1 {
+  color: #FFFFFF;
+  font-size: 2.8rem;
+  line-height: 1.15;
+}
+.hero-section .lead {
+  color: #E2E8F0;
+  font-size: 1.15rem;
+}
+.hero-badge {
+  background-color: rgba(198, 40, 40, 0.25);
+  border: 1px solid rgba(252, 232, 232, 0.3);
+  color: #FFCDD2;
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 0.35rem 0.8rem;
+  border-radius: 20px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 1rem;
+}
+
+/* Blood Group Badges */
+.blood-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  font-weight: 800;
+  font-size: 1rem;
+  background-color: var(--accent-soft-red);
+  color: var(--primary-red);
+  border: 1.5px solid var(--accent-soft-red-border);
+}
+.blood-badge.lg {
+  width: 56px;
+  height: 56px;
+  font-size: 1.25rem;
+}
+
+/* Badges */
+.badge-critical {
+  background-color: #FEE2E2;
+  color: #991B1B;
+  border: 1px solid #FCA5A5;
+  font-weight: 600;
+  padding: 0.35rem 0.65rem;
+}
+.badge-urgent {
+  background-color: #FEF3C7;
+  color: #92400E;
+  border: 1px solid #FCD34D;
+  font-weight: 600;
+  padding: 0.35rem 0.65rem;
+}
+.badge-normal {
+  background-color: #E0F2FE;
+  color: #075985;
+  border: 1px solid #BAE6FD;
+  font-weight: 600;
+  padding: 0.35rem 0.65rem;
+}
+
+/* Tables */
+.table-custom {
+  background-color: #FFFFFF;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border-subtle);
+}
+.table-custom th {
+  background-color: #F8FAFC;
+  color: var(--dark-navy);
+  font-weight: 700;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 0.85rem 1rem;
+  border-bottom: 1px solid var(--border-subtle);
+}
+.table-custom td {
+  padding: 0.85rem 1rem;
+  vertical-align: middle;
+  border-bottom: 1px solid #F1F5F9;
+  font-size: 0.92rem;
+}
+
+/* Forms */
+.form-control, .form-select {
+  border-radius: var(--radius-sm);
+  border: 1.5px solid var(--border-subtle);
+  padding: 0.55rem 0.85rem;
+  font-size: 0.95rem;
+}
+.form-control:focus, .form-select:focus {
+  border-color: var(--primary-red);
+  box-shadow: 0 0 0 3px rgba(198, 40, 40, 0.15);
+}
+
+/* Footer */
+.footer-custom {
+  background-color: var(--dark-navy);
+  color: #E2E8F0;
+  padding: 3rem 0 1.5rem;
+  margin-top: 3.5rem;
+}
+.footer-custom a {
+  color: #CBD5E1;
+}
+.footer-custom a:hover {
+  color: #FFFFFF;
+}
+
+/* Pulse animation for critical requests */
+.animate-pulse {
+  animation: pulse-red 1.5s infinite;
+}
+@keyframes pulse-red {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+/* DBMS SQL Code Box */
+.sql-code-box {
+  background-color: #0F172A;
+  color: #38BDF8;
+  border-radius: var(--radius-sm);
+  padding: 1rem;
+  font-family: 'Consolas', 'Courier New', monospace;
+  font-size: 0.88rem;
+  overflow-x: auto;
+  border: 1px solid #1E293B;
+}
+
+/* Print styling */
+@media print {
+  .no-print { display: none !important; }
+  body { background-color: #FFFFFF; font-size: 11pt; }
+  .card-custom { box-shadow: none; border: 1px solid #CCC; }
+}

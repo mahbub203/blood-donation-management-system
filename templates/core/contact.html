@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+
+{% block title %}Emergency Contacts & Support - LifeDrop BD{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card card-custom p-4 p-md-5">
+                <span class="badge bg-danger mb-2 align-self-start">Get In Touch</span>
+                <h2 class="fw-bold mb-3">Emergency Support & Inquiries</h2>
+                <p class="text-muted small mb-4">
+                    Have questions about blood requests, hospital onboarding, or system integration? Reach out through our emergency support channels.
+                </p>
+
+                <div class="row g-3 mb-4">
+                    <div class="col-sm-6">
+                        <div class="p-3 border rounded-3 bg-light">
+                            <h6 class="fw-bold text-danger mb-1"><i class="fa-solid fa-phone me-2"></i>National Emergency Hotlines</h6>
+                            <p class="small text-muted mb-0">Emergency Police/Ambulance: <strong>999</strong><br>Health Directorate Hotline: <strong>16263</strong></p>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="p-3 border rounded-3 bg-light">
+                            <h6 class="fw-bold text-dark mb-1"><i class="fa-solid fa-envelope me-2"></i>Email Support</h6>
+                            <p class="small text-muted mb-0">General: help@lifedropbd.org<br>Hospitals: partner@lifedropbd.org</p>
+                        </div>
+                    </div>
+                </div>
+
+                <form onsubmit="event.preventDefault(); alert('Thank you! Your inquiry has been recorded. Our team will follow up promptly.'); this.reset();">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">Your Name</label>
+                            <input type="text" class="form-control" required placeholder="e.g. Tanvir Rahman">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">Phone Number (+880)</label>
+                            <input type="tel" class="form-control" required placeholder="+8801XXXXXXXXX">
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label small fw-bold">Email Address</label>
+                            <input type="email" class="form-control" required placeholder="name@example.com">
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label small fw-bold">Subject / Organization</label>
+                            <input type="text" class="form-control" required placeholder="e.g. Hospital verification query">
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label small fw-bold">Message Details</label>
+                            <textarea class="form-control" rows="4" required placeholder="Describe your inquiry or support request..."></textarea>
+                        </div>
+                        <div class="col-12 mt-4">
+                            <button type="submit" class="btn btn-primary-red px-4">
+                                <i class="fa-solid fa-paper-plane me-2"></i>Send Message
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+
+{% block title %}About Us - LifeDrop BD{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card card-custom p-4 p-md-5">
+                <span class="badge bg-danger mb-2 align-self-start">About LifeDrop BD</span>
+                <h1 class="fw-bold mb-3">Bridging the Gap in Bangladesh's Blood Supply</h1>
+                <p class="lead text-secondary mb-4">
+                    LifeDrop BD is an advanced, database-driven healthcare informatics platform dedicated to solving the acute blood shortage and emergency response challenges across Bangladesh.
+                </p>
+
+                <div class="row g-4 my-3">
+                    <div class="col-md-4">
+                        <div class="p-3 bg-light rounded-3 h-100">
+                            <i class="fa-solid fa-bullseye text-danger fs-3 mb-2"></i>
+                            <h5 class="fw-bold text-dark">Our Mission</h5>
+                            <p class="small text-muted mb-0">
+                                To eliminate preventable maternal, surgical, and trauma deaths caused by delayed access to safe, compatible blood in Bangladesh.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="p-3 bg-light rounded-3 h-100">
+                            <i class="fa-solid fa-microchip text-primary fs-3 mb-2"></i>
+                            <h5 class="fw-bold text-dark">DBMS Innovation</h5>
+                            <p class="small text-muted mb-0">
+                                Powered by PostgreSQL relational database architecture, incorporating 3NF schemas, stored procedures, audit triggers, and real-time subquery matching.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="p-3 bg-light rounded-3 h-100">
+                            <i class="fa-solid fa-shield-halved text-success fs-3 mb-2"></i>
+                            <h5 class="fw-bold text-dark">Ethical Safety</h5>
+                            <p class="small text-muted mb-0">
+                                Donor privacy protection, role-based security access control (RBAC), and conservative 120-day donation interval validation.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <h4 class="fw-bold mt-4 mb-3">Bangladesh Scenario & Significance</h4>
+                <p class="text-secondary small leading-relaxed">
+                    According to the World Health Organization (WHO) and the Directorate General of Health Services (DGHS) of Bangladesh, over 900,000 to 1,000,000 units of blood are required annually in the country. A significant fraction of required blood still relies on replacement donations from desperate relatives. LifeDrop BD coordinates voluntary non-remunerated donors and connects them directly with patients and authorized hospitals across all 64 districts.
+                </p>
+
+                <div class="alert alert-warning d-flex gap-3 align-items-start mt-4 mb-0">
+                    <i class="fa-solid fa-triangle-exclamation fs-4 mt-1"></i>
+                    <div>
+                        <h6 class="fw-bold mb-1">Academic & Clinical Disclaimer</h6>
+                        <p class="small mb-0">
+                            LifeDrop BD is engineered as an academic Database Management System (DBMS) capstone project. System-calculated eligibility is a conservative baseline (default 120-day interval). Actual transfusion safety and clinical donor fitness must always be verified by licensed medical professionals through laboratory screening (HIV, HBV, HCV, Syphilis, Malaria) and physical examination.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,258 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}LifeDrop BD - Bangladesh Blood Donation Network{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container position-relative" style="z-index: 2;">
+        <div class="row align-items-center g-4">
+            <div class="col-lg-7">
+                <div class="hero-badge">
+                    <i class="fa-solid fa-droplet text-danger"></i> Bangladesh's Smart Blood Network
+                </div>
+                <h1 class="display-5 fw-bold mb-3">
+                    Every Drop Counts.<br>
+                    <span style="color: #FF8A80;">Every Life Matters.</span>
+                </h1>
+                <p class="lead mb-4 text-light opacity-90">
+                    Connect immediately with verified voluntary blood donors, hospitals, and emergency requests across 64 districts of Bangladesh. Powered by intelligent ABO/Rh compatibility matching.
+                </p>
+                <div class="d-flex flex-wrap gap-3">
+                    <a href="{% url 'blood_requests:create' %}" class="btn btn-primary-red btn-lg px-4 shadow">
+                        <i class="fa-solid fa-hand-holding-medical me-2"></i>Request Blood Urgently
+                    </a>
+                    <a href="{% url 'donors:search' %}" class="btn btn-outline-light btn-lg px-4">
+                        <i class="fa-solid fa-magnifying-glass me-2"></i>Find Compatible Donors
+                    </a>
+                </div>
+            </div>
+
+            <!-- Quick Donor Search Card -->
+            <div class="col-lg-5">
+                <div class="card card-custom p-4 shadow-lg border-0" style="background: #FFFFFF;">
+                    <h5 class="fw-bold text-dark mb-1 d-flex align-items-center gap-2">
+                        <i class="fa-solid fa-bolt text-danger"></i> Rapid Donor Search
+                    </h5>
+                    <p class="text-muted small mb-3">Find nearby eligible donors in seconds</p>
+
+                    <form action="{% url 'donors:search' %}" method="get">
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold text-secondary">Blood Group Required</label>
+                            <select name="blood_group" class="form-select" required>
+                                <option value="">-- Select Blood Group --</option>
+                                {% for bg in blood_groups %}
+                                    <option value="{{ bg.id }}">{{ bg.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold text-secondary">District</label>
+                            <select name="district" class="form-select" data-upazila-target="quick-search-upazila">
+                                <option value="">-- All Districts of Bangladesh --</option>
+                                {% for dist in districts %}
+                                    <option value="{{ dist.id }}">{{ dist.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold text-secondary">Upazila / Area</label>
+                            <select name="upazila" id="quick-search-upazila" class="form-select">
+                                <option value="">-- All Upazilas --</option>
+                            </select>
+                        </div>
+
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" name="eligible_only" value="1" id="eligibleCheck" checked>
+                            <label class="form-check-label small text-muted" for="eligibleCheck">
+                                Show only donors eligible to donate now (120+ days rule)
+                            </label>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary-red w-100 py-2 fw-bold">
+                            <i class="fa-solid fa-search me-2"></i>Search Donors
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Database-Driven Statistics Bar -->
+<section class="py-4 bg-white border-bottom">
+    <div class="container">
+        <div class="row g-3">
+            <div class="col-6 col-md-3">
+                <div class="stat-card">
+                    <div>
+                        <div class="stat-value text-danger">{{ total_donors }}</div>
+                        <div class="stat-label">Registered Donors</div>
+                    </div>
+                    <div class="stat-icon red"><i class="fa-solid fa-users"></i></div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="stat-card">
+                    <div>
+                        <div class="stat-value text-success">{{ available_donors }}</div>
+                        <div class="stat-label">Available Now</div>
+                    </div>
+                    <div class="stat-icon green"><i class="fa-solid fa-circle-check"></i></div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="stat-card">
+                    <div>
+                        <div class="stat-value text-primary">{{ total_requests }}</div>
+                        <div class="stat-label">Blood Requests</div>
+                    </div>
+                    <div class="stat-icon blue"><i class="fa-solid fa-notes-medical"></i></div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="stat-card">
+                    <div>
+                        <div class="stat-value text-dark">{{ fulfilled_requests }}</div>
+                        <div class="stat-label">Lives Saved</div>
+                    </div>
+                    <div class="stat-icon navy"><i class="fa-solid fa-heart"></i></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Active Emergency Blood Requests -->
+<section class="py-5">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h3 class="fw-bold mb-1"><i class="fa-solid fa-truck-medical text-danger me-2"></i>Urgent Blood Requests</h3>
+                <p class="text-muted small mb-0">Patients in critical need of compatible blood in Bangladesh</p>
+            </div>
+            <a href="{% url 'blood_requests:list' %}" class="btn btn-outline-red btn-sm">
+                View All Requests <i class="fa-solid fa-arrow-right ms-1"></i>
+            </a>
+        </div>
+
+        <div class="row g-4">
+            {% for req in urgent_requests %}
+                <div class="col-md-6 col-lg-4">
+                    <div class="card card-custom h-100 p-3">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="blood-badge">{{ req.blood_group.name }}</span>
+                                <div>
+                                    <h6 class="fw-bold mb-0 text-dark">{{ req.patient_name }}</h6>
+                                    <small class="text-muted">{{ req.units_needed }} Unit(s) Needed</small>
+                                </div>
+                            </div>
+                            <span class="{{ req.urgency_badge_class }}">{{ req.get_emergency_level_display }}</span>
+                        </div>
+
+                        <div class="small text-muted mb-2">
+                            <i class="fa-solid fa-hospital text-danger me-1"></i> <strong>{{ req.hospital_name }}</strong>
+                        </div>
+                        <div class="small text-muted mb-2">
+                            <i class="fa-solid fa-location-dot text-danger me-1"></i> {{ req.district.name }}{% if req.upazila %}, {{ req.upazila.name }}{% endif %}
+                        </div>
+                        <div class="small text-muted mb-3">
+                            <i class="fa-solid fa-calendar-day text-danger me-1"></i> Required: <strong>{{ req.required_date|date:"d M Y" }}</strong>
+                        </div>
+
+                        <p class="small text-secondary mb-3 text-truncate" title="{{ req.description }}">
+                            {{ req.description }}
+                        </p>
+
+                        <div class="mt-auto d-flex gap-2">
+                            <a href="{% url 'blood_requests:detail' req.id %}" class="btn btn-navy btn-sm flex-grow-1">
+                                <i class="fa-solid fa-eye me-1"></i> View Details
+                            </a>
+                            <a href="{% url 'donors:search' %}?blood_group={{ req.blood_group.id }}&district={{ req.district.id }}" class="btn btn-outline-red btn-sm" title="Find donors for this patient">
+                                <i class="fa-solid fa-user-plus"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+                <div class="col-12 text-center py-5">
+                    <i class="fa-solid fa-heart-circle-check text-success fs-1 mb-3"></i>
+                    <h5 class="text-dark">No Urgent Requests Pending</h5>
+                    <p class="text-muted small">All active blood requirements are currently fulfilled or in progress.</p>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- ABO/Rh Compatibility Info Banner -->
+<section class="py-5 bg-white border-top border-bottom">
+    <div class="container">
+        <div class="row align-items-center g-4">
+            <div class="col-lg-6">
+                <span class="badge bg-danger mb-2">Transfusion Intelligence</span>
+                <h3 class="fw-bold mb-3">Understanding ABO & Rh Compatibility</h3>
+                <p class="text-secondary small leading-relaxed">
+                    A successful blood transfusion requires careful matching of antigens and antibodies. While <strong>O-</strong> is recognized as the universal red-cell donor and <strong>AB+</strong> as the universal recipient, our system automatically computes valid donor-recipient pairs across all 8 blood groups.
+                </p>
+                <div class="alert alert-light border small text-muted py-2 mb-3">
+                    <i class="fa-solid fa-circle-exclamation text-warning me-2"></i>
+                    <strong>Medical Advisory:</strong> Compatibility suggestions in LifeDrop BD are preliminary algorithm matches. Final compatibility must always be crossmatched in a hospital laboratory before transfusion.
+                </div>
+                <a href="{% url 'core:how_it_works' %}" class="btn btn-outline-dark btn-sm">
+                    Learn More About Compatibility <i class="fa-solid fa-arrow-right ms-1"></i>
+                </a>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="card card-custom p-3 shadow-sm">
+                    <h6 class="fw-bold text-dark mb-3 text-center">Quick Red-Cell Donation Matrix</h6>
+                    <div class="table-responsive">
+                        <table class="table table-sm text-center small mb-0 align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Blood Type</th>
+                                    <th>Can Give Red Blood To</th>
+                                    <th>Can Receive From</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td><strong class="text-danger">O-</strong></td><td>All Blood Groups</td><td>O-</td></tr>
+                                <tr><td><strong class="text-danger">O+</strong></td><td>O+, A+, B+, AB+</td><td>O+, O-</td></tr>
+                                <tr><td><strong class="text-danger">A-</strong></td><td>A-, A+, AB-, AB+</td><td>A-, O-</td></tr>
+                                <tr><td><strong class="text-danger">A+</strong></td><td>A+, AB+</td><td>A+, A-, O+, O-</td></tr>
+                                <tr><td><strong class="text-danger">B-</strong></td><td>B-, B+, AB-, AB+</td><td>B-, O-</td></tr>
+                                <tr><td><strong class="text-danger">B+</strong></td><td>B+, AB+</td><td>B+, B-, O+, O-</td></tr>
+                                <tr><td><strong class="text-danger">AB-</strong></td><td>AB-, AB+</td><td>AB-, A-, B-, O-</td></tr>
+                                <tr><td><strong class="text-danger">AB+</strong></td><td>AB+ (Only)</td><td>All Blood Groups</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Call to Action -->
+<section class="py-5" style="background-color: var(--dark-navy); color: #FFFFFF;">
+    <div class="container text-center py-3">
+        <h2 class="text-white fw-bold mb-3">Ready to Save Lives in Bangladesh?</h2>
+        <p class="text-light opacity-75 max-w-lg mx-auto mb-4" style="max-width: 600px;">
+            Join thousands of voluntary blood donors across Bangladesh. A single donation takes 15 minutes and can save up to three lives.
+        </p>
+        <div class="d-flex justify-content-center gap-3">
+            <a href="{% url 'accounts:register' %}" class="btn btn-primary-red btn-lg px-4 shadow">
+                <i class="fa-solid fa-user-plus me-2"></i>Register as a Donor
+            </a>
+            <a href="{% url 'blood_requests:create' %}" class="btn btn-outline-light btn-lg px-4">
+                <i class="fa-solid fa-notes-medical me-2"></i>Post a Request
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %}
