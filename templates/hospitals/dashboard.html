@@ -1,0 +1,173 @@
+{% extends 'base.html' %}
+
+{% block title %}Hospital Portal: {{ hospital.org_name }} - LifeDrop BD{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Hospital Header -->
+    <div class="card card-custom p-4 mb-4">
+        <div class="row align-items-center g-3">
+            <div class="col-md-8 d-flex align-items-center gap-3">
+                <div class="stat-icon blue" style="width: 56px; height: 56px; font-size: 1.6rem;">
+                    <i class="fa-solid fa-hospital"></i>
+                </div>
+                <div>
+                    <div class="d-flex align-items-center gap-2">
+                        <h3 class="fw-bold text-dark mb-0">{{ hospital.org_name }}</h3>
+                        {% if hospital.is_verified %}
+                            <span class="badge bg-success"><i class="fa-solid fa-certificate me-1"></i>Verified DGHS Facility</span>
+                        {% else %}
+                            <span class="badge bg-warning text-dark"><i class="fa-solid fa-clock me-1"></i>Pending Admin Verification</span>
+                        {% endif %}
+                    </div>
+                    <p class="text-muted small mb-0 mt-1">
+                        <i class="fa-solid fa-id-badge text-danger me-1"></i> Reg: <strong>{{ hospital.license_number }}</strong>
+                        <span class="mx-2">•</span>
+                        <i class="fa-solid fa-location-dot me-1 text-danger"></i> {{ hospital.district.name }}, Bangladesh
+                        <span class="mx-2">•</span>
+                        <i class="fa-solid fa-phone me-1"></i> {{ hospital.phone }}
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-md-4 text-md-end d-flex justify-content-md-end gap-2">
+                <a href="{% url 'blood_requests:create' %}" class="btn btn-primary-red btn-sm fw-bold">
+                    <i class="fa-solid fa-plus me-1"></i> Post Emergency Request
+                </a>
+                <a href="{% url 'donations:record_direct' %}" class="btn btn-navy btn-sm fw-bold">
+                    <i class="fa-solid fa-syringe me-1"></i> Record Blood Camp
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Metrics -->
+    <div class="row g-3 mb-4">
+        <div class="col-sm-6 col-md-3">
+            <div class="stat-card">
+                <div>
+                    <div class="stat-value text-primary">{{ my_requests.count }}</div>
+                    <div class="stat-label">Total Requests</div>
+                </div>
+                <div class="stat-icon blue"><i class="fa-solid fa-file-medical"></i></div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-md-3">
+            <div class="stat-card">
+                <div>
+                    <div class="stat-value text-warning">{{ pending_donations.count }}</div>
+                    <div class="stat-label">Pending Certifications</div>
+                </div>
+                <div class="stat-icon yellow"><i class="fa-solid fa-hourglass-half"></i></div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-md-3">
+            <div class="stat-card">
+                <div>
+                    <div class="stat-value text-success">{{ verified_donations.count }}</div>
+                    <div class="stat-label">Certified Units</div>
+                </div>
+                <div class="stat-icon green"><i class="fa-solid fa-circle-check"></i></div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-md-3">
+            <div class="stat-card">
+                <div>
+                    <div class="stat-value text-danger">{{ appointments.count }}</div>
+                    <div class="stat-label">Donor Appointments</div>
+                </div>
+                <div class="stat-icon red"><i class="fa-solid fa-calendar-check"></i></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pending Donations to Certify -->
+    {% if pending_donations %}
+        <div class="card card-custom p-4 mb-4 border-warning shadow-sm">
+            <h5 class="fw-bold text-dark mb-3"><i class="fa-solid fa-clipboard-check text-warning me-2"></i>Incoming Scheduled Donations Awaiting Certification</h5>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Code</th>
+                            <th>Donor Name</th>
+                            <th>Blood Group</th>
+                            <th>Date</th>
+                            <th>Patient / Request</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for don in pending_donations %}
+                            <tr>
+                                <td class="font-monospace fw-bold text-danger">{{ don.donation_code }}</td>
+                                <td>{{ don.donor.user.get_full_name|default:don.donor.user.username }}</td>
+                                <td><span class="blood-badge" style="width: 32px; height: 32px; font-size: 0.85rem;">{{ don.blood_group.name }}</span></td>
+                                <td>{{ don.donation_date|date:"d M Y" }}</td>
+                                <td>{{ don.blood_request.patient_name|default:"General Transfusion" }}</td>
+                                <td>
+                                    <form action="{% url 'donations:certify' don.id %}" method="post" class="d-inline">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-success btn-sm py-1 px-3 fw-bold" onclick="return confirm('Confirm completion of this blood donation?');">
+                                            <i class="fa-solid fa-stamp me-1"></i> Certify Transfusion
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    {% endif %}
+
+    <!-- Requests Posted by This Hospital -->
+    <div class="card card-custom p-4 shadow-sm mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="fw-bold text-dark mb-0"><i class="fa-solid fa-list-check text-danger me-2"></i>Requests Posted by {{ hospital.org_name }}</h5>
+            <a href="{% url 'blood_requests:create' %}" class="btn btn-primary-red btn-sm">Create Request</a>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Code</th>
+                        <th>Patient</th>
+                        <th>Blood Group</th>
+                        <th>Units</th>
+                        <th>Required Date</th>
+                        <th>Emergency</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for req in my_requests %}
+                        <tr>
+                            <td class="font-monospace fw-bold text-danger">{{ req.request_code }}</td>
+                            <td>{{ req.patient_name }}</td>
+                            <td><span class="blood-badge" style="width: 32px; height: 32px; font-size: 0.85rem;">{{ req.blood_group.name }}</span></td>
+                            <td>{{ req.units_needed }} Unit(s)</td>
+                            <td>{{ req.required_date|date:"d M Y" }}</td>
+                            <td><span class="{{ req.urgency_badge_class }}">{{ req.get_emergency_level_display }}</span></td>
+                            <td><span class="{{ req.status_badge_class }}">{{ req.get_status_display }}</span></td>
+                            <td>
+                                <a href="{% url 'blood_requests:detail' req.id %}" class="btn btn-navy btn-sm py-1 px-2">
+                                    <i class="fa-solid fa-eye me-1"></i> View
+                                </a>
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="8" class="text-center py-4 text-muted">
+                                No blood requests posted by this facility yet.
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
