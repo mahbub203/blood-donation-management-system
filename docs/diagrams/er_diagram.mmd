@@ -1,0 +1,105 @@
+erDiagram
+    CORE_DISTRICT ||--o{ CORE_UPAZILA : contains
+    CORE_DISTRICT ||--o{ DONORS_DONORPROFILE : locates
+    CORE_UPAZILA ||--o{ DONORS_DONORPROFILE : locates
+    CORE_DISTRICT ||--o{ BLOOD_REQUESTS_BLOODREQUEST : delivers_to
+    CORE_DISTRICT ||--o{ HOSPITALS_HOSPITALORGANIZATION : operates_in
+
+    CORE_BLOODGROUP ||--o{ DONORS_DONORPROFILE : possesses
+    CORE_BLOODGROUP ||--o{ BLOOD_REQUESTS_BLOODREQUEST : requires
+    CORE_BLOODGROUP ||--o{ CORE_BLOODCOMPATIBILITY : donor_type
+    CORE_BLOODGROUP ||--o{ CORE_BLOODCOMPATIBILITY : recipient_type
+
+    ACCOUNTS_USER ||--o| DONORS_DONORPROFILE : extends_profile
+    ACCOUNTS_USER ||--o| BLOOD_REQUESTS_REQUESTERPROFILE : extends_profile
+    ACCOUNTS_USER ||--o| HOSPITALS_HOSPITALORGANIZATION : extends_profile
+    ACCOUNTS_USER ||--o{ NOTIFICATIONS_NOTIFICATION : receives
+    ACCOUNTS_USER ||--o{ ANALYTICS_ACTIVITYLOG : logs
+
+    ACCOUNTS_USER ||--o{ BLOOD_REQUESTS_BLOODREQUEST : submits
+    DONORS_DONORPROFILE ||--o{ DONATIONS_DONATIONAPPOINTMENT : schedules
+    BLOOD_REQUESTS_BLOODREQUEST ||--o{ DONATIONS_DONATIONAPPOINTMENT : links
+
+    DONORS_DONORPROFILE ||--o{ DONATIONS_DONATION : donates
+    BLOOD_REQUESTS_BLOODREQUEST ||--o{ DONATIONS_DONATION : fulfills
+    ACCOUNTS_USER ||--o{ DONATIONS_DONATION : certifies
+
+    CORE_DISTRICT {
+        int id PK
+        string name
+        string division
+        string bn_name
+    }
+
+    CORE_UPAZILA {
+        int id PK
+        int district_id FK
+        string name
+        string bn_name
+    }
+
+    CORE_BLOODGROUP {
+        int id PK
+        string name
+        string antigen
+        string antibody
+        text description
+    }
+
+    CORE_BLOODCOMPATIBILITY {
+        int id PK
+        int donor_group_id FK
+        int recipient_group_id FK
+        string notes
+    }
+
+    ACCOUNTS_USER {
+        int id PK
+        string username UK
+        string email
+        string phone_number UK
+        string role
+        boolean is_verified
+        boolean is_active
+    }
+
+    DONORS_DONORPROFILE {
+        int id PK
+        int user_id FK_UK
+        int blood_group_id FK
+        int district_id FK
+        int upazila_id FK
+        string gender
+        date date_of_birth
+        date last_donation_date
+        boolean is_available
+        int total_donations
+    }
+
+    BLOOD_REQUESTS_BLOODREQUEST {
+        int id PK
+        string request_code UK
+        int requester_id FK
+        int blood_group_id FK
+        int units_needed
+        string hospital_name
+        int district_id FK
+        int upazila_id FK
+        date required_date
+        string emergency_level
+        string status
+        string contact_number
+    }
+
+    DONATIONS_DONATION {
+        int id PK
+        string donation_code UK
+        int donor_id FK
+        int blood_request_id FK
+        date donation_date
+        string donation_location
+        int blood_group_id FK
+        int units_donated
+        string status
+        int verified_by_id FK
+    }

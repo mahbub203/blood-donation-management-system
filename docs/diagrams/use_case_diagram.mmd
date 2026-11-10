@@ -1,0 +1,33 @@
+flowchart LR
+    Donor(("Blood Donor"))
+    Requester(("Blood Requester"))
+    Hospital(("Hospital / Org"))
+    Admin(("System Administrator"))
+
+    UC1["Search Compatible Donors (ABO/Rh)"]
+    UC2["Toggle Availability & View Eligibility Countdown"]
+    UC3["Schedule Donation Appointment"]
+    UC4["Submit Emergency Blood Request"]
+    UC5["Track Request Status"]
+    UC6["Verify / Certify Completed Donation"]
+    UC7["Approve Hospital DGHS Credentials"]
+    UC8["Generate Printable & CSV Transfusion Reports"]
+    UC9["Inspect Live DBMS Queries & Explain Plans"]
+
+    Donor --- UC1
+    Donor --- UC2
+    Donor --- UC3
+    
+    Requester --- UC1
+    Requester --- UC4
+    Requester --- UC5
+
+    Hospital --- UC4
+    Hospital --- UC5
+    Hospital --- UC6
+
+    Admin --- UC1
+    Admin --- UC6
+    Admin --- UC7
+    Admin --- UC8
+    Admin --- UC9

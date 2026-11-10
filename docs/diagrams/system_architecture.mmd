@@ -1,0 +1,31 @@
+flowchart TD
+    subgraph ClientLayer["Frontend & Presentation Layer"]
+        UI_Desktop["Desktop Web Browser"]
+        UI_Mobile["Mobile Responsive Interface"]
+        BS5["Bootstrap 5 + Custom Healthcare Theme (#C62828 / #172B4D)"]
+        Charts["Chart.js Dynamic Visualizations"]
+    end
+
+    subgraph AppLayer["Application Layer (Django 6.1 on Python 3.15)"]
+        Router["URL Dispatcher & Middleware (CSRF, Auth, Sessions)"]
+        CoreApp["core: Geographic & Compatibility Engines"]
+        AuthApp["accounts: RBAC & Custom User Model"]
+        DonorApp["donors: Eligibility (120-Day Rule) & ABO Matching"]
+        RequestApp["blood_requests: Emergency Triage & LifeCycle"]
+        DonationApp["donations: Appointment & Atomic Certification"]
+        HospitalApp["hospitals: DGHS Facility Verification"]
+        AnalyticsApp["analytics: DBMS Showcase, Reporting & CSV"]
+        NotifApp["notifications: Real-Time In-App Alert System"]
+    end
+
+    subgraph DataLayer["Database Engine (PostgreSQL 16)"]
+        RelTables["3NF Relational Tables & Check Constraints"]
+        PgViews["Views: view_available_eligible_donors, view_blood_request_summary"]
+        PgFunctions["PL/pgSQL Functions: fn_certify_completed_donation()"]
+        PgTriggers["Triggers: trg_audit_request_status"]
+        BTreeIndexes["B-Tree Indexes: (district_id, is_available), blood_group, status"]
+    end
+
+    ClientLayer --> Router
+    Router --> AppLayer
+    AppLayer --> DataLayer
