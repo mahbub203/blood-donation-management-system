@@ -4,6 +4,11 @@
 
 A centralized, database-driven Blood Donation Management System designed for the Bangladesh healthcare ecosystem, engineered for an academic **Database Management System (DBMS)** university course project.
 
+### 🌐 Public Live Demo
+- **Live URL:** [https://indiana-pdf-titten-returned.trycloudflare.com](https://indiana-pdf-titten-returned.trycloudflare.com)
+- **Academic DBMS Showcase:** [https://indiana-pdf-titten-returned.trycloudflare.com/analytics/dbms-showcase/](https://indiana-pdf-titten-returned.trycloudflare.com/analytics/dbms-showcase/)
+- **GitHub Repository:** [https://github.com/mahbub203/blood-donation-management-system](https://github.com/mahbub203/blood-donation-management-system)
+
 ---
 
 ## 🌟 Key Features
