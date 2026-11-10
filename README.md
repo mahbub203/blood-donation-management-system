@@ -1,13 +1,29 @@
 # LifeDrop BD — Blood Donation Management System (BDMS)
 
-> **"Every Drop Counts. Every Life Matters."**
+[![Live Website](https://img.shields.io/badge/LIVE%20WEBSITE-ONLINE-success?style=for-the-badge&logo=cloudflare&logoColor=white)](https://chelsea-smooth-pushed-reception.trycloudflare.com)
+[![DBMS Showcase](https://img.shields.io/badge/DBMS%20SHOWCASE-LIVE%20DEMO-blue?style=for-the-badge&logo=postgresql&logoColor=white)](https://chelsea-smooth-pushed-reception.trycloudflare.com/analytics/dbms-showcase/)
+[![GitHub Repo](https://img.shields.io/badge/GITHUB-REPOSITORY-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/mahbub203/blood-donation-management-system)
+
+---
+
+## 🌐 PUBLIC LIVE APPLICATION LINKS
+
+> 🚀 **LIVE DEPLOYMENT IS ACTIVE AND RUNNING**  
+> Anyone can access the full functional platform online using the links below:
+
+- **🌍 Public Live Web App:** **[https://chelsea-smooth-pushed-reception.trycloudflare.com](https://chelsea-smooth-pushed-reception.trycloudflare.com)**
+- **🔬 DBMS Academic Evaluation Center:** **[https://chelsea-smooth-pushed-reception.trycloudflare.com/analytics/dbms-showcase/](https://chelsea-smooth-pushed-reception.trycloudflare.com/analytics/dbms-showcase/)**
+- **💻 Local Machine Access:** **[http://127.0.0.1:8000/](http://127.0.0.1:8000/)**
+
+### 🔑 Demo Accounts (Pre-Seeded & Ready to Log In)
+All accounts use the password: `Admin@12345` / `Donor@12345` / `Requester@12345` / `Hospital@12345`
+- **Admin:** `admin` | **Donor (O+):** `donor_tanvir` | **Donor (O-):** `donor_rahim` | **Requester:** `requester_kamal` | **Hospital:** `hospital_dmch`
+
+---
+
+> **Tagline:** *"Every Drop Counts. Every Life Matters."*
 
 A centralized, database-driven Blood Donation Management System designed for the Bangladesh healthcare ecosystem, engineered for an academic **Database Management System (DBMS)** university course project.
-
-### 🌐 Public Live Demo
-- **Live URL:** [https://indiana-pdf-titten-returned.trycloudflare.com](https://indiana-pdf-titten-returned.trycloudflare.com)
-- **Academic DBMS Showcase:** [https://indiana-pdf-titten-returned.trycloudflare.com/analytics/dbms-showcase/](https://indiana-pdf-titten-returned.trycloudflare.com/analytics/dbms-showcase/)
-- **GitHub Repository:** [https://github.com/mahbub203/blood-donation-management-system](https://github.com/mahbub203/blood-donation-management-system)
 
 ---
 

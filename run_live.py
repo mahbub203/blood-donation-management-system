@@ -1,6 +1,7 @@
 """
 LifeDrop BD - Unified Live Production Runner
-Runs local Django WSGI server on port 8080 and establishes Cloudflare HTTPS Quick Tunnel.
+Runs local Django WSGI server on 0.0.0.0:8000 (accessible at http://127.0.0.1:8000)
+and establishes Cloudflare HTTPS Quick Tunnel for instant worldwide public access.
 """
 
 import subprocess
@@ -12,13 +13,13 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent
 
 def main():
-    print("=" * 60)
-    print("  Starting LifeDrop BD Live Server & Cloudflare Tunnel")
-    print("=" * 60)
+    print("=" * 65)
+    print("  LifeDrop BD — Starting Local Server & Cloudflare Live Tunnel")
+    print("=" * 65)
 
-    # 1. Start Django Server on 127.0.0.1:8080
-    django_cmd = [sys.executable, "manage.py", "runserver", "127.0.0.1:8080", "--noreload"]
-    print(f"Launching Django: {' '.join(django_cmd)}")
+    # 1. Start Django Server on 0.0.0.0:8000 (so 127.0.0.1:8000 works in browser!)
+    django_cmd = [sys.executable, "manage.py", "runserver", "0.0.0.0:8000", "--noreload"]
+    print(f"[*] Starting Django Server at http://127.0.0.1:8000/ ...")
     django_proc = subprocess.Popen(
         django_cmd,
         cwd=str(BASE_DIR),
@@ -28,17 +29,17 @@ def main():
         bufsize=1
     )
 
-    # Give Django a couple seconds to bind
+    # Allow server to bind
     time.sleep(2)
 
-    # 2. Launch cloudflared tunnel
+    # 2. Start Cloudflare Tunnel
     cloudflared_exe = BASE_DIR / "cloudflared.exe"
     if not cloudflared_exe.exists():
-        print(f"Error: {cloudflared_exe} not found!")
+        print(f"[!] Error: cloudflared.exe not found in {BASE_DIR}")
         sys.exit(1)
 
-    cf_cmd = [str(cloudflared_exe), "tunnel", "--url", "http://127.0.0.1:8080"]
-    print(f"Launching Cloudflare Tunnel: {' '.join(cf_cmd)}")
+    cf_cmd = [str(cloudflared_exe), "tunnel", "--url", "http://127.0.0.1:8000"]
+    print(f"[*] Starting Cloudflare Public Tunnel for port 8000 ...")
     cf_proc = subprocess.Popen(
         cf_cmd,
         cwd=str(BASE_DIR),
@@ -48,7 +49,6 @@ def main():
         bufsize=1
     )
 
-    # Read output and detect the https://*.trycloudflare.com URL
     tunnel_url = None
     url_pattern = re.compile(r'https://[a-zA-Z0-9-]+\.trycloudflare\.com')
 
@@ -58,34 +58,35 @@ def main():
         if not line:
             time.sleep(0.1)
             continue
-        print(f"[cloudflared] {line.strip()}")
+        print(f"[tunnel] {line.strip()}")
         match = url_pattern.search(line)
         if match:
             tunnel_url = match.group(0)
             break
 
     if tunnel_url:
-        print("\n" + "=" * 60)
-        print(f"  >>> SUCCESS: LIFEDROP BD IS LIVE ONLINE! <<<")
-        print(f"  Public Live URL: {tunnel_url}")
-        print("=" * 60 + "\n")
+        print("\n" + "=" * 65)
+        print("  >>> SUCCESS! APPLICATION IS LIVE BOTH LOCALLY & GLOBALLY <<<")
+        print(f"  Local Browser URL : http://127.0.0.1:8000/")
+        print(f"  Public Internet URL: {tunnel_url}")
+        print("=" * 65 + "\n")
         with open(BASE_DIR / "LIVE_URL.txt", "w") as f:
             f.write(tunnel_url + "\n")
     else:
-        print("Warning: Could not automatically parse Cloudflare tunnel URL within 30 seconds.")
+        print("[!] Warning: Could not detect tunnel URL automatically within 30s.")
 
-    # Keep both running indefinitely
+    # Keep both running
     try:
         while True:
             time.sleep(1)
             if django_proc.poll() is not None:
-                print("Django process exited unexpectedly!")
+                print("[!] Django process terminated!")
                 break
             if cf_proc.poll() is not None:
-                print("Cloudflared process exited unexpectedly!")
+                print("[!] Cloudflared process terminated!")
                 break
     except KeyboardInterrupt:
-        print("Shutting down...")
+        print("Stopping...")
     finally:
         django_proc.terminate()
         cf_proc.terminate()
