@@ -559,63 +559,76 @@ class Command(BaseCommand):
                 uz = upazila_objs.get(f"{req_info['district']}_{req_info['upazila']}")
                 bg = bg_objs[req_info['blood']]
 
-                br = BloodRequest.objects.create(
+                br = BloodRequest.objects.filter(
                     requester=req_info['requester'],
                     patient_name=req_info['patient'],
-                    blood_group=bg,
-                    units_needed=req_info['units'],
-                    hospital_name=req_info['hospital'],
-                    hospital_address=req_info['address'],
-                    district=dist,
-                    upazila=uz,
-                    required_date=req_info['required_date'],
-                    emergency_level=req_info['urgency'],
-                    contact_number=req_info['contact'],
-                    description=req_info['desc'],
-                    status=req_info['status'],
-                )
+                    blood_group=bg
+                ).first()
+
+                if not br:
+                    br = BloodRequest.objects.create(
+                        requester=req_info['requester'],
+                        patient_name=req_info['patient'],
+                        blood_group=bg,
+                        units_needed=req_info['units'],
+                        hospital_name=req_info['hospital'],
+                        hospital_address=req_info['address'],
+                        district=dist,
+                        upazila=uz,
+                        required_date=req_info['required_date'],
+                        emergency_level=req_info['urgency'],
+                        contact_number=req_info['contact'],
+                        description=req_info['desc'],
+                        status=req_info['status'],
+                    )
                 request_objs.append(br)
             self.stdout.write(self.style.SUCCESS(f"Seeded {len(request_objs)} Blood Requests."))
 
             # 9. Seed Donations & Historical Records
             # Fulfilled donation for request_objs[3]
             donor_rahim = donor_profiles[2]  # O- universal donor
-            don1 = Donation.objects.create(
-                donor=donor_rahim,
-                blood_request=request_objs[3],
-                donation_date=date.today() - timedelta(days=5),
-                donation_location='Rajshahi Medical College Blood Bank',
-                blood_group=bg_objs['O-'],
-                units_donated=1,
-                status=Donation.Status.COMPLETED,
-                verified_by=admin_user,
-                remarks='Successfully cross-matched and transfused for trauma surgery.'
-            )
+            don_date1 = date.today() - timedelta(days=5)
+            if not Donation.objects.filter(donor=donor_rahim, donation_date=don_date1, status=Donation.Status.COMPLETED).exists():
+                Donation.objects.create(
+                    donor=donor_rahim,
+                    blood_request=request_objs[3],
+                    donation_date=don_date1,
+                    donation_location='Rajshahi Medical College Blood Bank',
+                    blood_group=bg_objs['O-'],
+                    units_donated=1,
+                    status=Donation.Status.COMPLETED,
+                    verified_by=admin_user,
+                    remarks='Successfully cross-matched and transfused for trauma surgery.'
+                )
 
             # Historical completed donation
             donor_tanvir = donor_profiles[0]
-            don2 = Donation.objects.create(
-                donor=donor_tanvir,
-                donation_date=date.today() - timedelta(days=150),
-                donation_location='Dhaka Medical College Hospital',
-                blood_group=bg_objs['O+'],
-                units_donated=1,
-                status=Donation.Status.COMPLETED,
-                verified_by=admin_user,
-                remarks='Regular voluntary blood donation at DMCH blood bank camp.'
-            )
+            don_date2 = date.today() - timedelta(days=150)
+            if not Donation.objects.filter(donor=donor_tanvir, donation_date=don_date2, status=Donation.Status.COMPLETED).exists():
+                Donation.objects.create(
+                    donor=donor_tanvir,
+                    donation_date=don_date2,
+                    donation_location='Dhaka Medical College Hospital',
+                    blood_group=bg_objs['O+'],
+                    units_donated=1,
+                    status=Donation.Status.COMPLETED,
+                    verified_by=admin_user,
+                    remarks='Regular voluntary blood donation at DMCH blood bank camp.'
+                )
 
             # Scheduled donation appointment
             donor_karim = donor_profiles[3]
-            DonationAppointment.objects.create(
-                donor=donor_karim,
-                blood_request=request_objs[2],
-                hospital_org=hospital_profiles[2],
-                appointment_date=date.today() + timedelta(days=3),
-                appointment_time='10:30:00',
-                status='SCHEDULED',
-                notes='Donor confirmed availability via phone call.'
-            )
+            appt_date = date.today() + timedelta(days=3)
+            if not DonationAppointment.objects.filter(donor=donor_karim, appointment_date=appt_date).exists():
+                DonationAppointment.objects.create(
+                    donor=donor_karim,
+                    blood_request=request_objs[2],
+                    hospital_org=hospital_profiles[2],
+                    appointment_date=appt_date,
+                    appointment_time='10:30:00',
+                    status='SCHEDULED',
+                    notes='Donor confirmed availability via phone call.'
+                )
             self.stdout.write(self.style.SUCCESS("Seeded Donations & Appointments."))
 
             # 10. Seed In-App Notifications
