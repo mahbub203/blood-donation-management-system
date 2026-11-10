@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+
+{% block title %}Blood Requests Directory - LifeDrop BD{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Header -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4">
+        <div>
+            <h2 class="fw-bold mb-1"><i class="fa-solid fa-heart-pulse text-danger me-2"></i>Active Blood Requests</h2>
+            <p class="text-muted small mb-0">Emergency patient requirements across healthcare facilities in Bangladesh</p>
+        </div>
+        <div class="mt-3 mt-md-0 d-flex gap-2">
+            <a href="{% url 'blood_requests:create' %}" class="btn btn-primary-red btn-sm fw-bold px-3">
+                <i class="fa-solid fa-plus me-1"></i> Post New Request
+            </a>
+        </div>
+    </div>
+
+    <!-- Filter Bar Card -->
+    <div class="card card-custom p-3 mb-4 shadow-sm">
+        <form method="get" action="{% url 'blood_requests:list' %}" class="row g-2 align-items-center">
+            <div class="col-md-3">
+                <select name="blood_group" class="form-select form-select-sm">
+                    <option value="">-- All Blood Groups --</option>
+                    {% for bg in blood_groups %}
+                        <option value="{{ bg.id }}" {% if selected_bg_id == bg.id %}selected{% endif %}>{{ bg.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3">
+                <select name="district" class="form-select form-select-sm">
+                    <option value="">-- All Districts --</option>
+                    {% for dist in districts %}
+                        <option value="{{ dist.id }}" {% if selected_district_id == dist.id %}selected{% endif %}>{{ dist.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3">
+                <select name="urgency" class="form-select form-select-sm">
+                    <option value="">-- All Emergency Levels --</option>
+                    <option value="CRITICAL" {% if selected_urgency == 'CRITICAL' %}selected{% endif %}>Critical Emergency</option>
+                    <option value="URGENT" {% if selected_urgency == 'URGENT' %}selected{% endif %}>Urgent</option>
+                    <option value="NORMAL" {% if selected_urgency == 'NORMAL' %}selected{% endif %}>Normal</option>
+                </select>
+            </div>
+            <div class="col-md-3 d-flex gap-2">
+                <button type="submit" class="btn btn-navy btn-sm flex-grow-1">
+                    <i class="fa-solid fa-filter me-1"></i>Filter
+                </button>
+                <a href="{% url 'blood_requests:list' %}" class="btn btn-outline-secondary btn-sm" title="Clear">
+                    <i class="fa-solid fa-rotate-left"></i>
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <!-- Requests Table / Grid -->
+    <div class="row g-3">
+        {% for req in blood_requests %}
+            <div class="col-md-6 col-lg-4">
+                <div class="card card-custom h-100 p-3">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="blood-badge">{{ req.blood_group.name }}</span>
+                            <div>
+                                <h6 class="fw-bold mb-0 text-dark">{{ req.patient_name }}</h6>
+                                <span class="small font-monospace text-muted">{{ req.request_code }}</span>
+                            </div>
+                        </div>
+                        <span class="{{ req.urgency_badge_class }}">{{ req.get_emergency_level_display }}</span>
+                    </div>
+
+                    <div class="small text-muted mb-2">
+                        <div><i class="fa-solid fa-hospital text-danger me-1"></i> <strong>{{ req.hospital_name }}</strong></div>
+                        <div><i class="fa-solid fa-location-dot text-danger me-1"></i> {{ req.district.name }}{% if req.upazila %}, {{ req.upazila.name }}{% endif %}</div>
+                        <div><i class="fa-solid fa-droplet text-danger me-1"></i> <strong>{{ req.units_needed }}</strong> Unit(s) needed</div>
+                        <div><i class="fa-solid fa-calendar-day text-danger me-1"></i> Required: <strong>{{ req.required_date|date:"d M Y" }}</strong></div>
+                    </div>
+
+                    <p class="small text-secondary mb-3 text-truncate" title="{{ req.description }}">
+                        {{ req.description }}
+                    </p>
+
+                    <div class="mt-auto d-flex justify-content-between align-items-center pt-2 border-top">
+                        <span class="{{ req.status_badge_class }}">{{ req.get_status_display }}</span>
+                        <a href="{% url 'blood_requests:detail' req.id %}" class="btn btn-navy btn-sm">
+                            View Details <i class="fa-solid fa-arrow-right ms-1"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <div class="col-12 text-center py-5">
+                <i class="fa-solid fa-circle-check text-success fs-1 mb-3"></i>
+                <h5 class="text-dark">No Blood Requests Found</h5>
+                <p class="text-muted small">Try adjusting your filters or post a new emergency request.</p>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

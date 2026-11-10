@@ -1,0 +1,131 @@
+{% extends 'base.html' %}
+
+{% block title %}Request Details: {{ req.request_code }} - LifeDrop BD{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <span class="badge bg-secondary mb-1 font-monospace">{{ req.request_code }}</span>
+            <h2 class="fw-bold mb-0 text-dark">{{ req.patient_name }}</h2>
+        </div>
+        <div class="d-flex gap-2">
+            <a href="{% url 'blood_requests:list' %}" class="btn btn-outline-secondary btn-sm">
+                <i class="fa-solid fa-arrow-left me-1"></i> All Requests
+            </a>
+            {% if can_manage and req.status != 'CANCELLED' and req.status != 'FULFILLED' %}
+                <a href="{% url 'blood_requests:cancel' req.id %}" onclick="return confirm('Are you sure you want to cancel this blood request?');" class="btn btn-outline-danger btn-sm">
+                    <i class="fa-solid fa-ban me-1"></i> Cancel Request
+                </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Main Request Specifications -->
+        <div class="col-lg-7">
+            <div class="card card-custom p-4 mb-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="d-flex align-items-center gap-3">
+                        <span class="blood-badge lg shadow-sm">{{ req.blood_group.name }}</span>
+                        <div>
+                            <span class="{{ req.urgency_badge_class }} mb-1 d-inline-block">{{ req.get_emergency_level_display }} Emergency</span>
+                            <h5 class="fw-bold mb-0 text-dark">{{ req.units_needed }} Unit(s) Blood Required</h5>
+                        </div>
+                    </div>
+                    <span class="{{ req.status_badge_class }} fs-6">{{ req.get_status_display }}</span>
+                </div>
+
+                <hr>
+
+                <h6 class="fw-bold text-secondary mb-3">Hospital & Delivery Location</h6>
+                <div class="row g-2 mb-4 small">
+                    <div class="col-sm-6">
+                        <span class="text-muted d-block">Hospital / Clinic:</span>
+                        <strong class="text-dark">{{ req.hospital_name }}</strong>
+                    </div>
+                    <div class="col-sm-6">
+                        <span class="text-muted d-block">District / Upazila:</span>
+                        <strong class="text-dark">{{ req.district.name }}{% if req.upazila %}, {{ req.upazila.name }}{% endif %}</strong>
+                    </div>
+                    <div class="col-12 mt-2">
+                        <span class="text-muted d-block">Ward, Bed & Detailed Address:</span>
+                        <span class="text-dark">{{ req.hospital_address }}</span>
+                    </div>
+                </div>
+
+                <h6 class="fw-bold text-secondary mb-3">Timing & Contact Information</h6>
+                <div class="row g-2 mb-4 small">
+                    <div class="col-sm-6">
+                        <span class="text-muted d-block">Required Date:</span>
+                        <strong class="text-danger fs-6">{{ req.required_date|date:"l, d F Y" }}</strong>
+                    </div>
+                    <div class="col-sm-6">
+                        <span class="text-muted d-block">Emergency Contact Phone:</span>
+                        <strong class="text-dark fs-6"><a href="tel:{{ req.contact_number }}">{{ req.contact_number }}</a></strong>
+                    </div>
+                </div>
+
+                <h6 class="fw-bold text-secondary mb-2">Clinical Details & Instructions</h6>
+                <div class="p-3 bg-light rounded-3 small text-secondary">
+                    {{ req.description|linebreaks }}
+                </div>
+
+                {% if user.is_authenticated and user.is_donor_role %}
+                    <div class="mt-4 pt-3 border-top">
+                        <a href="{% url 'donations:schedule' req.id %}" class="btn btn-primary-red w-100 py-2 fw-bold">
+                            <i class="fa-solid fa-calendar-check me-2"></i>I Wish to Donate for This Patient (Schedule Appointment)
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Matching Eligible Donors in this District -->
+        <div class="col-lg-5">
+            <div class="card card-custom p-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="fw-bold text-dark mb-0">
+                        <i class="fa-solid fa-users-viewfinder text-danger me-2"></i>Compatible Donors
+                    </h5>
+                    <span class="badge bg-danger">{{ matching_donors.count }} Found</span>
+                </div>
+                <p class="text-muted small mb-3">
+                    Eligible voluntary donors in <strong>{{ req.district.name }}</strong> with compatible red-cell antigens.
+                </p>
+
+                <div class="list-group list-group-flush">
+                    {% for donor in matching_donors %}
+                        <div class="list-group-item px-0 py-2 d-flex justify-content-between align-items-center">
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="blood-badge" style="width: 36px; height: 36px; font-size: 0.9rem;">{{ donor.blood_group.name }}</span>
+                                <div>
+                                    <h6 class="fw-bold mb-0 text-dark small">{{ donor.user.get_full_name|default:donor.user.username }}</h6>
+                                    <small class="text-muted">{{ donor.upazila.name|default:donor.district.name }} • {{ donor.total_donations }} donations</small>
+                                </div>
+                            </div>
+                            <div>
+                                {% if user.is_authenticated %}
+                                    <a href="tel:{{ donor.user.phone_number }}" class="btn btn-outline-success btn-sm py-1 px-2" title="Call Donor">
+                                        <i class="fa-solid fa-phone"></i>
+                                    </a>
+                                {% else %}
+                                    <span class="badge bg-light text-muted border">Protected</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% empty %}
+                        <div class="text-center py-4 text-muted">
+                            <i class="fa-solid fa-magnifying-glass text-secondary fs-3 mb-2"></i>
+                            <p class="small mb-0">No eligible donors currently available in this immediate district.</p>
+                            <a href="{% url 'donors:search' %}?blood_group={{ req.blood_group.id }}" class="btn btn-outline-secondary btn-sm mt-2">
+                                Search Nearby Districts
+                            </a>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
