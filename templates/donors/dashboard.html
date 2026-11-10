@@ -1,0 +1,164 @@
+{% extends 'base.html' %}
+
+{% block title %}Donor Dashboard - LifeDrop BD{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Donor Profile Header -->
+    <div class="card card-custom p-4 mb-4">
+        <div class="row align-items-center g-3">
+            <div class="col-md-8 d-flex align-items-center gap-3">
+                <div class="blood-badge lg shadow-sm">
+                    {{ profile.blood_group.name }}
+                </div>
+                <div>
+                    <h3 class="fw-bold text-dark mb-0">{{ profile.user.get_full_name|default:profile.user.username }}</h3>
+                    <p class="text-muted small mb-1">
+                        <i class="fa-solid fa-location-dot text-danger me-1"></i> {{ profile.district.name }}{% if profile.upazila %}, {{ profile.upazila.name }}{% endif %}
+                        <span class="mx-2">•</span>
+                        <i class="fa-solid fa-phone me-1"></i> {{ profile.user.display_phone }}
+                    </p>
+                    <div>
+                        {% if profile.is_eligible %}
+                            <span class="badge bg-success"><i class="fa-solid fa-check-circle me-1"></i>Ready & Medically Eligible (120+ Days)</span>
+                        {% else %}
+                            <span class="badge bg-warning text-dark"><i class="fa-solid fa-hourglass-half me-1"></i>Rest Period: Eligible in {{ profile.days_remaining }} day(s)</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4 text-md-end">
+                <form action="{% url 'donors:toggle_availability' %}" method="post" class="d-inline-block">
+                    {% csrf_token %}
+                    {% if profile.is_available %}
+                        <button type="submit" class="btn btn-outline-success btn-sm px-3 fw-bold shadow-sm">
+                            <i class="fa-solid fa-toggle-on fs-5 align-middle me-1"></i> Status: Available
+                        </button>
+                    {% else %}
+                        <button type="submit" class="btn btn-outline-secondary btn-sm px-3 fw-bold">
+                            <i class="fa-solid fa-toggle-off fs-5 align-middle me-1"></i> Status: Unavailable
+                        </button>
+                    {% endif %}
+                </form>
+                <a href="{% url 'accounts:profile_view' %}" class="btn btn-light btn-sm ms-2 border" title="Edit Profile">
+                    <i class="fa-solid fa-user-pen"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Metric Cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-sm-6 col-md-3">
+            <div class="stat-card">
+                <div>
+                    <div class="stat-value text-danger">{{ profile.total_donations }}</div>
+                    <div class="stat-label">Total Donations</div>
+                </div>
+                <div class="stat-icon red"><i class="fa-solid fa-award"></i></div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-md-3">
+            <div class="stat-card">
+                <div>
+                    <div class="stat-value text-dark" style="font-size: 1.25rem;">
+                        {{ profile.last_donation_date|date:"d M Y"|default:"Never" }}
+                    </div>
+                    <div class="stat-label">Last Donated</div>
+                </div>
+                <div class="stat-icon navy"><i class="fa-solid fa-calendar-check"></i></div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-md-3">
+            <div class="stat-card">
+                <div>
+                    <div class="stat-value text-success" style="font-size: 1.25rem;">
+                        {{ profile.next_eligible_date|date:"d M Y" }}
+                    </div>
+                    <div class="stat-label">Next Eligible Date</div>
+                </div>
+                <div class="stat-icon green"><i class="fa-solid fa-calendar-plus"></i></div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-md-3">
+            <div class="stat-card">
+                <div>
+                    <div class="stat-value text-primary">{{ matching_requests.count }}</div>
+                    <div class="stat-label">Matched Requests</div>
+                </div>
+                <div class="stat-icon blue"><i class="fa-solid fa-bell"></i></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Compatible Emergency Requests -->
+        <div class="col-lg-8">
+            <div class="card card-custom p-4 h-100">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="fw-bold mb-0 text-dark"><i class="fa-solid fa-hand-holding-medical text-danger me-2"></i>Emergency Requests Matching Your Blood Group</h5>
+                    <a href="{% url 'blood_requests:list' %}" class="btn btn-outline-secondary btn-sm">All Requests</a>
+                </div>
+
+                <div class="list-group list-group-flush">
+                    {% for req in matching_requests %}
+                        <div class="list-group-item px-0 py-3 d-flex justify-content-between align-items-center">
+                            <div class="d-flex align-items-center gap-3">
+                                <span class="blood-badge">{{ req.blood_group.name }}</span>
+                                <div>
+                                    <h6 class="fw-bold mb-1 text-dark">{{ req.patient_name }}</h6>
+                                    <p class="small text-muted mb-0">
+                                        <i class="fa-solid fa-hospital text-danger me-1"></i> {{ req.hospital_name }} ({{ req.district.name }})
+                                        <span class="mx-1">•</span>
+                                        Required: <strong>{{ req.required_date|date:"d M Y" }}</strong>
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="text-end">
+                                <span class="{{ req.urgency_badge_class }} mb-2 d-inline-block">{{ req.get_emergency_level_display }}</span>
+                                <div>
+                                    <a href="{% url 'blood_requests:detail' req.id %}" class="btn btn-navy btn-sm">
+                                        View Details
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    {% empty %}
+                        <div class="text-center py-4 text-muted">
+                            <i class="fa-solid fa-circle-check text-success fs-2 mb-2"></i>
+                            <p class="small mb-0">No pending emergency requests match your blood group in this region right now.</p>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Personal Donations Sidebar -->
+        <div class="col-lg-4">
+            <div class="card card-custom p-4 h-100">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="fw-bold mb-0 text-dark"><i class="fa-solid fa-clock-rotate-left text-danger me-2"></i>Donation History</h5>
+                    <a href="{% url 'donors:history' %}" class="btn btn-outline-danger btn-sm">Full History</a>
+                </div>
+
+                <div class="list-group list-group-flush small">
+                    {% for don in recent_donations %}
+                        <div class="list-group-item px-0 py-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="fw-bold text-dark">{{ don.donation_date|date:"d M Y" }}</span>
+                                <span class="{{ don.status_badge_class }}">{{ don.get_status_display }}</span>
+                            </div>
+                            <div class="text-muted text-truncate">{{ don.donation_location }}</div>
+                        </div>
+                    {% empty %}
+                        <div class="text-center py-4 text-muted">
+                            <p class="small mb-0">No past donations recorded yet.</p>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
