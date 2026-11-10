@@ -1,0 +1,32 @@
+databases:
+  - name: lifedrop-db
+    databaseName: lifedrop_bd_db
+    user: lifedrop_user
+    plan: free
+
+services:
+  - type: web
+    name: lifedrop-bd
+    runtime: python
+    buildCommand: "./build.sh"
+    startCommand: "gunicorn lifedrop_bd.wsgi:application"
+    plan: free
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: lifedrop-db
+          property: connectionString
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: "False"
+      - key: ALLOWED_HOSTS
+        value: "*"
+      - key: DEFAULT_DONATION_INTERVAL_DAYS
+        value: "120"
+      - key: DEFAULT_CURRENCY
+        value: "BDT"
+      - key: DEFAULT_COUNTRY_CODE
+        value: "+880"
+      - key: TIME_ZONE
+        value: "Asia/Dhaka"
