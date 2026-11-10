@@ -1,0 +1,270 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Administrator Control Center - LifeDrop BD{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4 px-md-5">
+    <!-- Header -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4">
+        <div>
+            <span class="badge bg-danger mb-1">Administrative Terminal</span>
+            <h2 class="fw-bold text-dark mb-0"><i class="fa-solid fa-gauge-high me-2 text-danger"></i>System Control Center</h2>
+        </div>
+        <div class="mt-3 mt-md-0 d-flex gap-2">
+            <a href="{% url 'analytics:reports' %}" class="btn btn-navy btn-sm fw-bold">
+                <i class="fa-solid fa-chart-pie me-1"></i> System Reports
+            </a>
+            <a href="{% url 'analytics:dbms_showcase' %}" class="btn btn-outline-primary btn-sm fw-bold">
+                <i class="fa-solid fa-database me-1"></i> DBMS Live Showcase
+            </a>
+            <a href="{% url 'donations:record_direct' %}" class="btn btn-primary-red btn-sm fw-bold">
+                <i class="fa-solid fa-plus me-1"></i> Record Donation
+            </a>
+        </div>
+    </div>
+
+    <!-- 7 Metric Cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-md-3 col-xl">
+            <div class="stat-card">
+                <div>
+                    <div class="stat-value text-dark">{{ total_users }}</div>
+                    <div class="stat-label">Total Users</div>
+                </div>
+                <div class="stat-icon navy"><i class="fa-solid fa-users"></i></div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3 col-xl">
+            <div class="stat-card">
+                <div>
+                    <div class="stat-value text-danger">{{ total_donors }}</div>
+                    <div class="stat-label">Blood Donors</div>
+                </div>
+                <div class="stat-icon red"><i class="fa-solid fa-droplet"></i></div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3 col-xl">
+            <div class="stat-card">
+                <div>
+                    <div class="stat-value text-success">{{ available_donors }}</div>
+                    <div class="stat-label">Available Donors</div>
+                </div>
+                <div class="stat-icon green"><i class="fa-solid fa-circle-check"></i></div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3 col-xl">
+            <div class="stat-card">
+                <div>
+                    <div class="stat-value text-primary">{{ total_requests }}</div>
+                    <div class="stat-label">Blood Requests</div>
+                </div>
+                <div class="stat-icon blue"><i class="fa-solid fa-notes-medical"></i></div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3 col-xl">
+            <div class="stat-card">
+                <div>
+                    <div class="stat-value text-warning">{{ pending_requests }}</div>
+                    <div class="stat-label">Pending Triage</div>
+                </div>
+                <div class="stat-icon yellow"><i class="fa-solid fa-clock"></i></div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3 col-xl">
+            <div class="stat-card">
+                <div>
+                    <div class="stat-value text-success">{{ completed_donations }}</div>
+                    <div class="stat-label">Completed Units</div>
+                </div>
+                <div class="stat-icon green"><i class="fa-solid fa-heart-pulse"></i></div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3 col-xl">
+            <div class="stat-card">
+                <div>
+                    <div class="stat-value text-dark">{{ verified_hospitals }}</div>
+                    <div class="stat-label">Hospitals Verified</div>
+                </div>
+                <div class="stat-icon navy"><i class="fa-solid fa-hospital"></i></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Management Nav Bar -->
+    <div class="card card-custom p-2 mb-4 bg-white">
+        <div class="d-flex flex-wrap gap-2">
+            <a href="{% url 'analytics:admin_users' %}" class="btn btn-light btn-sm fw-semibold"><i class="fa-solid fa-user-gear me-1"></i>Users</a>
+            <a href="{% url 'analytics:admin_requests' %}" class="btn btn-light btn-sm fw-semibold"><i class="fa-solid fa-list-check me-1"></i>Requests</a>
+            <a href="{% url 'analytics:admin_donations' %}" class="btn btn-light btn-sm fw-semibold"><i class="fa-solid fa-syringe me-1"></i>Donations</a>
+            <a href="{% url 'analytics:admin_hospitals' %}" class="btn btn-light btn-sm fw-semibold">
+                <i class="fa-solid fa-hospital me-1"></i>Hospitals
+                {% if pending_hospitals > 0 %}<span class="badge bg-danger ms-1">{{ pending_hospitals }}</span>{% endif %}
+            </a>
+            <a href="{% url 'analytics:admin_logs' %}" class="btn btn-light btn-sm fw-semibold"><i class="fa-solid fa-fingerprint me-1"></i>Activity Logs</a>
+        </div>
+    </div>
+
+    <!-- Charts Row -->
+    <div class="row g-4 mb-4">
+        <div class="col-lg-4">
+            <div class="card card-custom p-4 h-100">
+                <h6 class="fw-bold text-dark mb-3"><i class="fa-solid fa-chart-pie text-danger me-2"></i>Blood Group Supply Distribution</h6>
+                <div style="height: 250px;">
+                    <canvas id="bloodGroupChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card card-custom p-4 h-100">
+                <h6 class="fw-bold text-dark mb-3"><i class="fa-solid fa-chart-bar text-primary me-2"></i>Request Lifecycle Breakdown</h6>
+                <div style="height: 250px;">
+                    <canvas id="statusChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card card-custom p-4 h-100">
+                <h6 class="fw-bold text-dark mb-3"><i class="fa-solid fa-map-location-dot text-success me-2"></i>Donors by District (Top Regions)</h6>
+                <div style="height: 250px;">
+                    <canvas id="districtChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activities & Tables -->
+    <div class="row g-4">
+        <!-- Recent Requests -->
+        <div class="col-lg-6">
+            <div class="card card-custom p-4 h-100">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="fw-bold text-dark mb-0">Recent Blood Requests</h5>
+                    <a href="{% url 'analytics:admin_requests' %}" class="btn btn-outline-secondary btn-sm">View All</a>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0 small">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Code</th>
+                                <th>Patient</th>
+                                <th>Group</th>
+                                <th>Urgency</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for req in recent_requests %}
+                                <tr>
+                                    <td class="font-monospace fw-bold text-danger">{{ req.request_code }}</td>
+                                    <td>{{ req.patient_name }}</td>
+                                    <td><span class="blood-badge" style="width: 28px; height: 28px; font-size: 0.75rem;">{{ req.blood_group.name }}</span></td>
+                                    <td><span class="{{ req.urgency_badge_class }}">{{ req.get_emergency_level_display }}</span></td>
+                                    <td><span class="{{ req.status_badge_class }}">{{ req.get_status_display }}</span></td>
+                                </tr>
+                            {% empty %}
+                                <tr><td colspan="5" class="text-center py-3 text-muted">No requests recorded</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Audit Activity Log -->
+        <div class="col-lg-6">
+            <div class="card card-custom p-4 h-100">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="fw-bold text-dark mb-0">System Activity Audit Log</h5>
+                    <a href="{% url 'analytics:admin_logs' %}" class="btn btn-outline-secondary btn-sm">All Logs</a>
+                </div>
+                <div class="list-group list-group-flush small">
+                    {% for log in recent_logs %}
+                        <div class="list-group-item px-0 py-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="badge bg-secondary font-monospace">{{ log.action }}</span>
+                                <span class="text-muted" style="font-size: 0.75rem;">{{ log.created_at|date:"d M H:i" }}</span>
+                            </div>
+                            <div class="text-dark mt-1">{{ log.details }}</div>
+                            <small class="text-muted">Actor: {{ log.user.username|default:"System" }}</small>
+                        </div>
+                    {% empty %}
+                        <div class="text-center py-3 text-muted">No audit logs recorded yet</div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    // 1. Blood Group Doughnut
+    const bgCtx = document.getElementById('bloodGroupChart').getContext('2d');
+    new Chart(bgCtx, {
+        type: 'doughnut',
+        data: {
+            labels: {{ bg_labels|safe }},
+            datasets: [{
+                data: {{ bg_data|safe }},
+                backgroundColor: [
+                    '#C62828', '#D32F2F', '#E53935', '#F44336',
+                    '#172B4D', '#1E3A8A', '#2563EB', '#3B82F6'
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { position: 'right' } }
+        }
+    });
+
+    // 2. Request Status Bar Chart
+    const statusCtx = document.getElementById('statusChart').getContext('2d');
+    new Chart(statusCtx, {
+        type: 'bar',
+        data: {
+            labels: {{ status_labels|safe }},
+            datasets: [{
+                label: 'Requests',
+                data: {{ status_data|safe }},
+                backgroundColor: ['#F59E0B', '#3B82F6', '#06B6D4', '#10B981', '#6B7280']
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: { y: { beginAtZero: true, ticks: { precision: 0 } } }
+        }
+    });
+
+    // 3. District Horizontal Bar Chart
+    const distCtx = document.getElementById('districtChart').getContext('2d');
+    new Chart(distCtx, {
+        type: 'bar',
+        data: {
+            labels: {{ district_labels|safe }},
+            datasets: [{
+                label: 'Donors',
+                data: {{ district_data|safe }},
+                backgroundColor: '#172B4D'
+            }]
+        },
+        options: {
+            indexAxis: 'y',
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: { x: { beginAtZero: true, ticks: { precision: 0 } } }
+        }
+    });
+});
+</script>
+{% endblock %}

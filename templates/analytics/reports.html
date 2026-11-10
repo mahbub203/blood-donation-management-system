@@ -1,0 +1,150 @@
+{% extends 'base.html' %}
+
+{% block title %}System Reports & Analytics - LifeDrop BD{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Header -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4">
+        <div>
+            <span class="badge bg-danger mb-1">Administrative Intelligence</span>
+            <h2 class="fw-bold text-dark mb-0"><i class="fa-solid fa-chart-line text-danger me-2"></i>Comprehensive System Reports</h2>
+            <p class="text-muted small mb-0">Filtered performance, clinical units collected, and CSV export utilities</p>
+        </div>
+        <div class="mt-3 mt-md-0 d-flex gap-2 no-print">
+            <button onclick="window.print();" class="btn btn-outline-dark btn-sm fw-bold">
+                <i class="fa-solid fa-print me-1"></i> Print Report
+            </button>
+            <div class="dropdown">
+                <button class="btn btn-navy btn-sm dropdown-toggle fw-bold" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="fa-solid fa-file-csv me-1"></i> Export Data (CSV)
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end shadow border-0">
+                    <li><a class="dropdown-item" href="{% url 'analytics:export_csv' 'donors' %}"><i class="fa-solid fa-users me-2 text-danger"></i>Export All Donors (.csv)</a></li>
+                    <li><a class="dropdown-item" href="{% url 'analytics:export_csv' 'requests' %}"><i class="fa-solid fa-notes-medical me-2 text-primary"></i>Export Blood Requests (.csv)</a></li>
+                    <li><a class="dropdown-item" href="{% url 'analytics:export_csv' 'donations' %}"><i class="fa-solid fa-syringe me-2 text-success"></i>Export Donations (.csv)</a></li>
+                </ul>
+            </div>
+            <a href="{% url 'analytics:admin_dashboard' %}" class="btn btn-outline-secondary btn-sm">
+                <i class="fa-solid fa-arrow-left me-1"></i> Dashboard
+            </a>
+        </div>
+    </div>
+
+    <!-- Date Range Filter Form -->
+    <div class="card card-custom p-3 mb-4 shadow-sm no-print">
+        <form method="get" action="{% url 'analytics:reports' %}" class="row g-2 align-items-center">
+            <div class="col-md-4">
+                <label class="form-label small fw-bold text-secondary mb-1">Start Date</label>
+                <input type="date" name="start_date" class="form-control form-control-sm" value="{{ start_date }}">
+            </div>
+            <div class="col-md-4">
+                <label class="form-label small fw-bold text-secondary mb-1">End Date</label>
+                <input type="date" name="end_date" class="form-control form-control-sm" value="{{ end_date }}">
+            </div>
+            <div class="col-md-4 d-flex align-items-end gap-2" style="margin-top: 1.8rem;">
+                <button type="submit" class="btn btn-primary-red btn-sm flex-grow-1 fw-bold">
+                    <i class="fa-solid fa-filter me-1"></i> Filter Report
+                </button>
+                <a href="{% url 'analytics:reports' %}" class="btn btn-outline-secondary btn-sm">Reset</a>
+            </div>
+        </form>
+    </div>
+
+    <!-- Printable Header Banner -->
+    <div class="card card-custom p-4 mb-4 border-0">
+        <div class="d-flex justify-content-between align-items-center border-bottom pb-3 mb-3">
+            <div>
+                <h4 class="fw-bold text-dark mb-0">LifeDrop BD — Executive Transfusion Report</h4>
+                <p class="text-muted small mb-0">Period: <strong>{{ start_date }}</strong> to <strong>{{ end_date }}</strong></p>
+            </div>
+            <div class="text-end small text-muted">
+                Report Generated: <strong>{% now "d M Y H:i" %}</strong><br>
+                Currency: BDT | Region: Bangladesh
+            </div>
+        </div>
+
+        <!-- Metrics Row -->
+        <div class="row g-3 mb-4">
+            <div class="col-sm-6 col-md-3">
+                <div class="p-3 bg-light rounded-3 text-center">
+                    <div class="fs-3 fw-bold text-danger">{{ total_donations }}</div>
+                    <div class="small text-muted fw-semibold">Completed Donations</div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-md-3">
+                <div class="p-3 bg-light rounded-3 text-center">
+                    <div class="fs-3 fw-bold text-dark">{{ total_units }}</div>
+                    <div class="small text-muted fw-semibold">Total Blood Units (450ml)</div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-md-3">
+                <div class="p-3 bg-light rounded-3 text-center">
+                    <div class="fs-3 fw-bold text-primary">{{ total_requests }}</div>
+                    <div class="small text-muted fw-semibold">Blood Requests Logged</div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-md-3">
+                <div class="p-3 bg-light rounded-3 text-center">
+                    <div class="fs-3 fw-bold text-success">{{ fulfilled_requests }}</div>
+                    <div class="small text-muted fw-semibold">Requests Fulfilled</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <!-- Blood Group Transfusion Breakdown -->
+            <div class="col-md-6">
+                <h6 class="fw-bold text-dark mb-3">Blood Group Donation Breakdown (Period)</h6>
+                <div class="table-responsive">
+                    <table class="table table-sm table-bordered align-middle mb-0 small">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Blood Group</th>
+                                <th>Donation Events</th>
+                                <th>Total Units</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for bg in bg_breakdown %}
+                                <tr>
+                                    <td><strong class="text-danger">{{ bg.blood_group__name }}</strong></td>
+                                    <td>{{ bg.count }}</td>
+                                    <td><strong>{{ bg.units }} Unit(s)</strong></td>
+                                </tr>
+                            {% empty %}
+                                <tr><td colspan="3" class="text-center text-muted">No completed donations in this date range.</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- District-Wise Demand Breakdown -->
+            <div class="col-md-6">
+                <h6 class="fw-bold text-dark mb-3">District-Wise Blood Demand (Top 10)</h6>
+                <div class="table-responsive">
+                    <table class="table table-sm table-bordered align-middle mb-0 small">
+                        <thead class="table-light">
+                            <tr>
+                                <th>District Name</th>
+                                <th>Blood Requests Posted</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for dist in district_breakdown %}
+                                <tr>
+                                    <td>{{ dist.district__name }}</td>
+                                    <td><strong>{{ dist.req_count }} Request(s)</strong></td>
+                                </tr>
+                            {% empty %}
+                                <tr><td colspan="2" class="text-center text-muted">No requests recorded in this date range.</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

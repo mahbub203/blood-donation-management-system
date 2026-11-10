@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+
+{% block title %}Hospital & Organization Management - LifeDrop BD{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold mb-1"><i class="fa-solid fa-hospital-user text-danger me-2"></i>Hospitals & Organizations</h2>
+            <p class="text-muted small mb-0">Healthcare facility verification and blood bank certification management</p>
+        </div>
+        <a href="{% url 'analytics:admin_dashboard' %}" class="btn btn-outline-secondary btn-sm">
+            <i class="fa-solid fa-arrow-left me-1"></i> Admin Dashboard
+        </a>
+    </div>
+
+    <div class="card card-custom p-4 shadow-sm">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Organization Name</th>
+                        <th>Type</th>
+                        <th>DGHS License</th>
+                        <th>District</th>
+                        <th>Contact Person</th>
+                        <th>Phone</th>
+                        <th>Verification Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for h in hospitals %}
+                        <tr>
+                            <td><strong>{{ h.org_name }}</strong></td>
+                            <td><span class="badge bg-secondary text-uppercase">{{ h.get_org_type_display }}</span></td>
+                            <td class="font-monospace small">{{ h.license_number }}</td>
+                            <td>{{ h.district.name }}</td>
+                            <td>{{ h.contact_person }}</td>
+                            <td>{{ h.phone }}</td>
+                            <td>
+                                {% if h.is_verified %}
+                                    <span class="badge bg-success"><i class="fa-solid fa-check me-1"></i>Verified</span>
+                                {% else %}
+                                    <span class="badge bg-warning text-dark"><i class="fa-solid fa-clock me-1"></i>Pending</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{% url 'analytics:admin_verify_hospital' h.id %}" onclick="return confirm('Toggle verification status for this organization?');" class="btn btn-sm {% if h.is_verified %}btn-outline-danger{% else %}btn-success{% endif %} py-1 px-2 fw-semibold">
+                                    {% if h.is_verified %}
+                                        <i class="fa-solid fa-ban me-1"></i>Revoke
+                                    {% else %}
+                                        <i class="fa-solid fa-stamp me-1"></i>Verify & Approve
+                                    {% endif %}
+                                </a>
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr><td colspan="8" class="text-center py-4 text-muted">No hospitals registered yet.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

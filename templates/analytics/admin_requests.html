@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+
+{% block title %}Request Management - LifeDrop BD{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold mb-1"><i class="fa-solid fa-list-check text-danger me-2"></i>Blood Request Management</h2>
+            <p class="text-muted small mb-0">Oversee request triage, approvals, donor matching, and fulfillments</p>
+        </div>
+        <a href="{% url 'analytics:admin_dashboard' %}" class="btn btn-outline-secondary btn-sm">
+            <i class="fa-solid fa-arrow-left me-1"></i> Admin Dashboard
+        </a>
+    </div>
+
+    <!-- Filter Card -->
+    <div class="card card-custom p-3 mb-4 shadow-sm">
+        <form method="get" action="{% url 'analytics:admin_requests' %}" class="row g-2 align-items-center">
+            <div class="col-md-4">
+                <select name="status" class="form-select form-select-sm">
+                    <option value="">-- All Request Statuses --</option>
+                    <option value="PENDING" {% if selected_status == 'PENDING' %}selected{% endif %}>Pending</option>
+                    <option value="APPROVED" {% if selected_status == 'APPROVED' %}selected{% endif %}>Approved</option>
+                    <option value="DONOR_FOUND" {% if selected_status == 'DONOR_FOUND' %}selected{% endif %}>Donor Found</option>
+                    <option value="FULFILLED" {% if selected_status == 'FULFILLED' %}selected{% endif %}>Fulfilled</option>
+                    <option value="REJECTED" {% if selected_status == 'REJECTED' %}selected{% endif %}>Rejected</option>
+                    <option value="CANCELLED" {% if selected_status == 'CANCELLED' %}selected{% endif %}>Cancelled</option>
+                </select>
+            </div>
+            <div class="col-md-3 d-flex gap-2">
+                <button type="submit" class="btn btn-navy btn-sm flex-grow-1"><i class="fa-solid fa-filter me-1"></i>Filter</button>
+                <a href="{% url 'analytics:admin_requests' %}" class="btn btn-outline-secondary btn-sm"><i class="fa-solid fa-rotate-left"></i></a>
+            </div>
+        </form>
+    </div>
+
+    <div class="card card-custom p-4 shadow-sm">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Code</th>
+                        <th>Patient</th>
+                        <th>Group</th>
+                        <th>Units</th>
+                        <th>Hospital / District</th>
+                        <th>Date</th>
+                        <th>Emergency</th>
+                        <th>Status</th>
+                        <th>Change Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for req in requests %}
+                        <tr>
+                            <td class="font-monospace fw-bold text-danger">{{ req.request_code }}</td>
+                            <td><strong>{{ req.patient_name }}</strong></td>
+                            <td><span class="blood-badge" style="width: 32px; height: 32px; font-size: 0.85rem;">{{ req.blood_group.name }}</span></td>
+                            <td>{{ req.units_needed }} Unit(s)</td>
+                            <td>{{ req.hospital_name }}<br><small class="text-muted">{{ req.district.name }}</small></td>
+                            <td>{{ req.required_date|date:"d M Y" }}</td>
+                            <td><span class="{{ req.urgency_badge_class }}">{{ req.get_emergency_level_display }}</span></td>
+                            <td><span class="{{ req.status_badge_class }}">{{ req.get_status_display }}</span></td>
+                            <td>
+                                <form action="{% url 'analytics:admin_update_request_status' req.id %}" method="post" class="d-flex gap-1">
+                                    {% csrf_token %}
+                                    <select name="status" class="form-select form-select-sm" style="width: 120px;">
+                                        <option value="PENDING" {% if req.status == 'PENDING' %}selected{% endif %}>Pending</option>
+                                        <option value="APPROVED" {% if req.status == 'APPROVED' %}selected{% endif %}>Approved</option>
+                                        <option value="DONOR_FOUND" {% if req.status == 'DONOR_FOUND' %}selected{% endif %}>Donor Found</option>
+                                        <option value="FULFILLED" {% if req.status == 'FULFILLED' %}selected{% endif %}>Fulfilled</option>
+                                        <option value="REJECTED" {% if req.status == 'REJECTED' %}selected{% endif %}>Rejected</option>
+                                        <option value="CANCELLED" {% if req.status == 'CANCELLED' %}selected{% endif %}>Cancelled</option>
+                                    </select>
+                                    <button type="submit" class="btn btn-outline-primary btn-sm py-0 px-2" title="Save Status">
+                                        <i class="fa-solid fa-check"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr><td colspan="9" class="text-center py-4 text-muted">No blood requests match filter.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
