@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+
+{% block title %}Sign In - LifeDrop BD{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="card card-custom p-4 p-md-5 shadow-sm">
+                <div class="text-center mb-4">
+                    <div class="blood-badge lg mx-auto mb-2">
+                        <i class="fa-solid fa-droplet text-danger"></i>
+                    </div>
+                    <h3 class="fw-bold text-dark">Welcome Back</h3>
+                    <p class="text-muted small">Sign in to your LifeDrop BD account</p>
+                </div>
+
+                <form method="post" action="{% url 'accounts:login' %}">
+                    {% csrf_token %}
+
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-secondary">Username or Phone</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light text-muted"><i class="fa-solid fa-user"></i></span>
+                            {{ form.username }}
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <div class="d-flex justify-content-between">
+                            <label class="form-label small fw-bold text-secondary">Password</label>
+                            <a href="#" onclick="alert('For academic demo, default password is: Admin@12345 / Donor@12345 / Requester@12345 / Hospital@12345');" class="small text-danger">Forgot?</a>
+                        </div>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light text-muted"><i class="fa-solid fa-lock"></i></span>
+                            {{ form.password }}
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary-red w-100 py-2 fw-bold">
+                        <i class="fa-solid fa-arrow-right-to-bracket me-2"></i>Sign In
+                    </button>
+                </form>
+
+                <hr class="my-4">
+
+                <!-- Demonstration Quick Credentials Help Box -->
+                <div class="p-3 bg-light rounded-3 small">
+                    <span class="fw-bold text-dark d-block mb-1"><i class="fa-solid fa-key text-warning me-1"></i> Demo Credentials:</span>
+                    <ul class="list-unstyled mb-0 text-muted" style="font-size: 0.8rem;">
+                        <li><strong>Admin:</strong> <code>admin</code> / <code>Admin@12345</code></li>
+                        <li><strong>Donor:</strong> <code>donor_tanvir</code> / <code>Donor@12345</code></li>
+                        <li><strong>Requester:</strong> <code>requester_kamal</code> / <code>Requester@12345</code></li>
+                        <li><strong>Hospital:</strong> <code>hospital_dmch</code> / <code>Hospital@12345</code></li>
+                    </ul>
+                </div>
+
+                <div class="text-center mt-4 small text-muted">
+                    Don't have an account yet? <a href="{% url 'accounts:register' %}" class="fw-bold text-danger">Register Now</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

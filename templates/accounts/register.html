@@ -1,0 +1,246 @@
+{% extends 'base.html' %}
+
+{% block title %}Create Account - LifeDrop BD{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card card-custom p-4 p-md-5">
+                <div class="text-center mb-4">
+                    <span class="badge bg-danger mb-2">Join the Network</span>
+                    <h2 class="fw-bold">Create Your LifeDrop Account</h2>
+                    <p class="text-muted small">Choose your role to get started</p>
+                </div>
+
+                <!-- Role Selector Tabs -->
+                <ul class="nav nav-pills nav-fill mb-4 p-1 bg-light rounded-pill" id="registerTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link rounded-pill py-2 {% if active_tab == 'donor' %}active bg-danger text-white{% endif %}" id="donor-tab" data-bs-toggle="pill" data-bs-target="#donor-pane" type="button" role="tab">
+                            <i class="fa-solid fa-hand-holding-droplet me-2"></i>Blood Donor
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link rounded-pill py-2 {% if active_tab == 'requester' %}active bg-danger text-white{% endif %}" id="requester-tab" data-bs-toggle="pill" data-bs-target="#requester-pane" type="button" role="tab">
+                            <i class="fa-solid fa-notes-medical me-2"></i>Blood Requester
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link rounded-pill py-2 {% if active_tab == 'hospital' %}active bg-danger text-white{% endif %}" id="hospital-tab" data-bs-toggle="pill" data-bs-target="#hospital-pane" type="button" role="tab">
+                            <i class="fa-solid fa-hospital me-2"></i>Hospital / Org
+                        </button>
+                    </li>
+                </ul>
+
+                <div class="tab-content" id="registerTabsContent">
+                    <!-- 1. DONOR REGISTRATION PANE -->
+                    <div class="tab-pane fade {% if active_tab == 'donor' %}show active{% endif %}" id="donor-pane" role="tabpanel">
+                        <form method="post" action="{% url 'accounts:register' %}?role=donor">
+                            {% csrf_token %}
+                            <input type="hidden" name="form_type" value="donor">
+
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-bold">First Name</label>
+                                    {{ donor_form.first_name }}
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-bold">Last Name</label>
+                                    {{ donor_form.last_name }}
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-bold">Username</label>
+                                    {{ donor_form.username }}
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-bold">Email Address</label>
+                                    {{ donor_form.email }}
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-bold">Bangladesh Phone Number</label>
+                                    {{ donor_form.phone_number }}
+                                    <small class="text-muted" style="font-size: 0.75rem;">+8801XXXXXXXXX</small>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-bold text-danger">Blood Group</label>
+                                    {{ donor_form.blood_group }}
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-bold">Gender</label>
+                                    {{ donor_form.gender }}
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-bold">Date of Birth</label>
+                                    {{ donor_form.date_of_birth }}
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-bold">District</label>
+                                    {{ donor_form.district }}
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-bold">Upazila</label>
+                                    {{ donor_form.upazila }}
+                                </div>
+
+                                <div class="col-12">
+                                    <label class="form-label small fw-bold">Full Address</label>
+                                    {{ donor_form.full_address }}
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-bold">Last Donation Date</label>
+                                    {{ donor_form.last_donation_date }}
+                                    <small class="text-muted d-block" style="font-size: 0.75rem;">Leave empty if first-time donor</small>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-bold">Password</label>
+                                    {{ donor_form.password }}
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-bold">Confirm Password</label>
+                                    {{ donor_form.confirm_password }}
+                                </div>
+
+                                <div class="col-12 mt-4">
+                                    <button type="submit" class="btn btn-primary-red w-100 py-2 fw-bold">
+                                        <i class="fa-solid fa-heart me-2"></i>Complete Donor Registration
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- 2. REQUESTER REGISTRATION PANE -->
+                    <div class="tab-pane fade {% if active_tab == 'requester' %}show active{% endif %}" id="requester-pane" role="tabpanel">
+                        <form method="post" action="{% url 'accounts:register' %}?role=requester">
+                            {% csrf_token %}
+                            <input type="hidden" name="form_type" value="requester">
+
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-bold">First Name</label>
+                                    {{ requester_form.first_name }}
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-bold">Last Name</label>
+                                    {{ requester_form.last_name }}
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-bold">Username</label>
+                                    {{ requester_form.username }}
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-bold">Email Address</label>
+                                    {{ requester_form.email }}
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-bold">Phone Number (+880)</label>
+                                    {{ requester_form.phone_number }}
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-bold">District</label>
+                                    {{ requester_form.district }}
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-bold">Upazila</label>
+                                    {{ requester_form.upazila }}
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-bold">Password</label>
+                                    {{ requester_form.password }}
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-bold">Confirm Password</label>
+                                    {{ requester_form.confirm_password }}
+                                </div>
+                                <div class="col-12 mt-4">
+                                    <button type="submit" class="btn btn-navy w-100 py-2 fw-bold">
+                                        <i class="fa-solid fa-user-plus me-2"></i>Register as Blood Requester
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- 3. HOSPITAL REGISTRATION PANE -->
+                    <div class="tab-pane fade {% if active_tab == 'hospital' %}show active{% endif %}" id="hospital-pane" role="tabpanel">
+                        <form method="post" action="{% url 'accounts:register' %}?role=hospital">
+                            {% csrf_token %}
+                            <input type="hidden" name="form_type" value="hospital">
+
+                            <div class="alert alert-info small py-2">
+                                <i class="fa-solid fa-info-circle me-1"></i> Hospital accounts require admin credential verification before managing and certifying blood requests.
+                            </div>
+
+                            <div class="row g-3">
+                                <div class="col-12">
+                                    <label class="form-label small fw-bold">Organization / Hospital Name</label>
+                                    {{ hospital_form.org_name }}
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-bold">Organization Type</label>
+                                    {{ hospital_form.org_type }}
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-bold">DGHS License / Registration No.</label>
+                                    {{ hospital_form.license_number }}
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-bold">Contact Person / Medical Officer</label>
+                                    {{ hospital_form.contact_person }}
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-bold">Official Phone (+880)</label>
+                                    {{ hospital_form.phone }}
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-bold">Official Email</label>
+                                    {{ hospital_form.email }}
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-bold">District</label>
+                                    {{ hospital_form.district }}
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-bold">Upazila</label>
+                                    {{ hospital_form.upazila }}
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label small fw-bold">Physical Address / Transfusion Unit</label>
+                                    {{ hospital_form.address }}
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label small fw-bold">Account Username</label>
+                                    {{ hospital_form.username }}
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label small fw-bold">Password</label>
+                                    {{ hospital_form.password }}
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label small fw-bold">Confirm Password</label>
+                                    {{ hospital_form.confirm_password }}
+                                </div>
+                                <div class="col-12 mt-4">
+                                    <button type="submit" class="btn btn-dark w-100 py-2 fw-bold">
+                                        <i class="fa-solid fa-hospital-user me-2"></i>Submit Hospital Application
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="text-center mt-4 small text-muted">
+                    Already registered? <a href="{% url 'accounts:login' %}" class="fw-bold text-danger">Sign In Here</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
