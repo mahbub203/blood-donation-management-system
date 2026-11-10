@@ -1,0 +1,125 @@
+{% extends 'base.html' %}
+
+{% block title %}DBMS Academic Live Showcase - LifeDrop BD{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4">
+        <div>
+            <span class="badge bg-primary mb-1">Academic DBMS Evaluation Center</span>
+            <h2 class="fw-bold mb-0 text-dark"><i class="fa-solid fa-database text-primary me-2"></i>PostgreSQL Advanced DBMS Showcase</h2>
+            <p class="text-muted small mb-0">Live query execution, Relational Views, Multi-Table Joins, Subqueries, Stored Procedures, and EXPLAIN ANALYZE</p>
+        </div>
+        <div class="mt-3 mt-md-0">
+            <span class="badge bg-dark text-white p-2 font-monospace">PostgreSQL 16 Engine</span>
+        </div>
+    </div>
+
+    <!-- Query Selection Tabs / Buttons -->
+    <div class="card card-custom p-3 mb-4 shadow-sm">
+        <h6 class="fw-bold text-secondary mb-2">Select Live SQL Query to Execute in PostgreSQL:</h6>
+        <div class="d-flex flex-wrap gap-2">
+            <a href="?query=view_donors" class="btn btn-sm {% if query_type == 'view_donors' %}btn-primary{% else %}btn-outline-secondary{% endif %}">
+                <i class="fa-solid fa-table me-1"></i> View: Available & Eligible Donors
+            </a>
+            <a href="?query=view_requests" class="btn btn-sm {% if query_type == 'view_requests' %}btn-primary{% else %}btn-outline-secondary{% endif %}">
+                <i class="fa-solid fa-table me-1"></i> View: Blood Request Summary (Subquery)
+            </a>
+            <a href="?query=view_district_stats" class="btn btn-sm {% if query_type == 'view_district_stats' %}btn-primary{% else %}btn-outline-secondary{% endif %}">
+                <i class="fa-solid fa-chart-column me-1"></i> View: District Transfusion Stats
+            </a>
+            <a href="?query=join_multi_table" class="btn btn-sm {% if query_type == 'join_multi_table' %}btn-primary{% else %}btn-outline-secondary{% endif %}">
+                <i class="fa-solid fa-diagram-project me-1"></i> Multi-Table 5-Way JOIN
+            </a>
+            <a href="?query=subquery_unmatched" class="btn btn-sm {% if query_type == 'subquery_unmatched' %}btn-primary{% else %}btn-outline-secondary{% endif %}">
+                <i class="fa-solid fa-filter me-1"></i> Subquery: Unmatched Donors
+            </a>
+            <a href="?query=explain_analyze" class="btn btn-sm {% if query_type == 'explain_analyze' %}btn-primary{% else %}btn-outline-secondary{% endif %}">
+                <i class="fa-solid fa-gauge me-1"></i> EXPLAIN ANALYZE (Execution Plan)
+            </a>
+        </div>
+    </div>
+
+    <!-- Live SQL Query Display -->
+    <div class="card card-custom p-4 mb-4 shadow-sm border-primary">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+            <h6 class="fw-bold text-dark mb-0"><i class="fa-solid fa-terminal text-primary me-2"></i>Raw SQL Executed on Database:</h6>
+            <span class="badge bg-success-subtle text-success border border-success-subtle">Live PostgreSQL Execution</span>
+        </div>
+        <pre class="sql-code-box mb-0"><code>{{ sql_query }}</code></pre>
+    </div>
+
+    <!-- Live Results Table -->
+    <div class="card card-custom p-4 shadow-sm mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="fw-bold text-dark mb-0">Query Result Set ({{ rows|length }} row{{ rows|length|pluralize }})</h5>
+            <span class="small text-muted">Fetched from PostgreSQL 16</span>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-hover table-striped align-middle mb-0 small">
+                <thead class="table-dark">
+                    <tr>
+                        {% for col in columns %}
+                            <th class="font-monospace">{{ col }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in rows %}
+                        <tr>
+                            {% for cell in row %}
+                                <td>
+                                    {% if cell is True %}
+                                        <span class="badge bg-success">TRUE</span>
+                                    {% elif cell is False %}
+                                        <span class="badge bg-danger">FALSE</span>
+                                    {% elif cell is None %}
+                                        <span class="text-muted fst-italic">NULL</span>
+                                    {% else %}
+                                        {{ cell }}
+                                    {% endif %}
+                                </td>
+                            {% endfor %}
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="{{ columns|length|default:1 }}" class="text-center py-4 text-muted">
+                                No records returned from query execution.
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Academic DBMS Architecture Checklist Cards -->
+    <div class="row g-3">
+        <div class="col-md-4">
+            <div class="p-3 bg-white border rounded-3 h-100">
+                <h6 class="fw-bold text-danger mb-2"><i class="fa-solid fa-cubes me-2"></i>PostgreSQL Schema & 3NF</h6>
+                <p class="small text-muted mb-0">
+                    Tables are normalized to Third Normal Form (3NF). Geographic relations (Districts, Upazilas), compatibility matrix, and role extensions are decoupled with foreign key constraints.
+                </p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="p-3 bg-white border rounded-3 h-100">
+                <h6 class="fw-bold text-primary mb-2"><i class="fa-solid fa-gears me-2"></i>Triggers & Stored Procedures</h6>
+                <p class="small text-muted mb-0">
+                    Includes PL/pgSQL function <code>fn_certify_completed_donation()</code> and trigger <code>trg_audit_request_status</code> that automatically records audit changes in real time.
+                </p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="p-3 bg-white border rounded-3 h-100">
+                <h6 class="fw-bold text-success mb-2"><i class="fa-solid fa-bolt me-2"></i>Indexes & Optimization</h6>
+                <p class="small text-muted mb-0">
+                    B-Tree indexing on <code>(district_id, is_available)</code>, <code>blood_group_id</code>, and <code>status</code> reduces query latency from linear scans to index scans.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
