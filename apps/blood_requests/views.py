@@ -14,8 +14,8 @@ from analytics.models import ActivityLog
 
 def request_list(request):
     """Public searchable listing of blood donation requests."""
-    blood_group_id = request.GET.get('blood_group')
-    district_id = request.GET.get('district')
+    blood_group_param = request.GET.get('blood_group')
+    district_param = request.GET.get('district')
     emergency_level = request.GET.get('urgency')
     status = request.GET.get('status', '')
 
@@ -23,10 +23,22 @@ def request_list(request):
         'blood_group', 'district', 'upazila', 'requester'
     )
 
-    if blood_group_id:
-        requests_qs = requests_qs.filter(blood_group_id=blood_group_id)
-    if district_id:
-        requests_qs = requests_qs.filter(district_id=district_id)
+    selected_bg_id = None
+    if blood_group_param:
+        if str(blood_group_param).isdigit():
+            selected_bg_id = int(blood_group_param)
+            requests_qs = requests_qs.filter(blood_group_id=selected_bg_id)
+        else:
+            bg = BloodGroup.objects.filter(name__iexact=str(blood_group_param).strip()).first()
+            if bg:
+                selected_bg_id = bg.id
+                requests_qs = requests_qs.filter(blood_group=bg)
+
+    selected_district_id = None
+    if district_param and str(district_param).isdigit():
+        selected_district_id = int(district_param)
+        requests_qs = requests_qs.filter(district_id=selected_district_id)
+
     if emergency_level:
         requests_qs = requests_qs.filter(emergency_level=emergency_level)
     if status:
@@ -58,8 +70,8 @@ def request_list(request):
         'blood_requests': blood_requests,
         'districts': districts,
         'blood_groups': blood_groups,
-        'selected_bg_id': int(blood_group_id) if blood_group_id else None,
-        'selected_district_id': int(district_id) if district_id else None,
+        'selected_bg_id': selected_bg_id,
+        'selected_district_id': selected_district_id,
         'selected_urgency': emergency_level,
         'selected_status': status,
         'total_count': requests_qs.count(),

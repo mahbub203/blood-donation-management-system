@@ -81,8 +81,8 @@ def api_upazilas(request):
     AJAX endpoint returning list of upazilas for a district.
     """
     district_id = request.GET.get('district_id')
-    if not district_id:
+    if not district_id or not str(district_id).isdigit():
         return JsonResponse({'upazilas': []})
 
-    upazilas = Upazila.objects.filter(district_id=district_id).values('id', 'name')
+    upazilas = Upazila.objects.filter(district_id=int(district_id)).values('id', 'name')
     return JsonResponse({'upazilas': list(upazilas)})

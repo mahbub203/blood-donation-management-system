@@ -19,9 +19,9 @@ def donor_search(request):
     Includes filtering by district, upazila, availability, and 120-day eligibility rule.
     Protects donor contact information by masking it for unauthenticated public viewers.
     """
-    blood_group_id = request.GET.get('blood_group')
-    district_id = request.GET.get('district')
-    upazila_id = request.GET.get('upazila')
+    blood_group_param = request.GET.get('blood_group')
+    district_param = request.GET.get('district')
+    upazila_param = request.GET.get('upazila')
     available_only = request.GET.get('available_only', '1') == '1'
     eligible_only = request.GET.get('eligible_only', '1') == '1'
     exact_match_only = request.GET.get('exact_match', '0') == '1'
@@ -33,9 +33,13 @@ def donor_search(request):
     selected_blood_group = None
     compatible_groups = []
 
-    if blood_group_id:
-        try:
-            selected_blood_group = BloodGroup.objects.get(id=blood_group_id)
+    if blood_group_param:
+        if str(blood_group_param).isdigit():
+            selected_blood_group = BloodGroup.objects.filter(id=int(blood_group_param)).first()
+        else:
+            selected_blood_group = BloodGroup.objects.filter(name__iexact=str(blood_group_param).strip()).first()
+
+        if selected_blood_group:
             if exact_match_only:
                 compatible_groups = [selected_blood_group]
                 donors_qs = donors_qs.filter(blood_group=selected_blood_group)
@@ -46,13 +50,15 @@ def donor_search(request):
                 ).values_list('donor_group_id', flat=True)
                 compatible_groups = BloodGroup.objects.filter(id__in=compat_donor_ids)
                 donors_qs = donors_qs.filter(blood_group__in=compatible_groups)
-        except BloodGroup.DoesNotExist:
-            pass
 
-    if district_id:
+    district_id = None
+    if district_param and str(district_param).isdigit():
+        district_id = int(district_param)
         donors_qs = donors_qs.filter(district_id=district_id)
 
-    if upazila_id:
+    upazila_id = None
+    if upazila_param and str(upazila_param).isdigit():
+        upazila_id = int(upazila_param)
         donors_qs = donors_qs.filter(upazila_id=upazila_id)
 
     if available_only:
@@ -74,6 +80,13 @@ def donor_search(request):
     blood_groups = BloodGroup.objects.all()
 
     # Academic SQL Demonstration Query snippet for professors
+    bg_filter_clause = ""
+    if selected_blood_group:
+        if exact_match_only:
+            bg_filter_clause = f"AND dp.blood_group_id = {selected_blood_group.id}"
+        else:
+            bg_filter_clause = f"AND dp.blood_group_id IN (SELECT donor_group_id FROM core_bloodcompatibility WHERE recipient_group_id = {selected_blood_group.id})"
+
     sql_explanation = f"""
     -- LifeDrop BD Compatible Donor Search SQL
     SELECT dp.id, u.first_name, u.last_name, bg.name, d.name AS district, dp.is_available, dp.last_donation_date
@@ -83,7 +96,7 @@ def donor_search(request):
     LEFT JOIN core_district d ON dp.district_id = d.id
     WHERE dp.is_available = TRUE
       AND (dp.last_donation_date IS NULL OR dp.last_donation_date <= CURRENT_DATE - INTERVAL '120 days')
-      {"AND dp.blood_group_id IN (SELECT donor_group_id FROM core_bloodcompatibility WHERE recipient_group_id = " + str(blood_group_id) + ")" if blood_group_id and not exact_match_only else ""}
+      {bg_filter_clause}
     ORDER BY dp.is_available DESC, dp.total_donations DESC;
     """.strip()
 
@@ -95,8 +108,8 @@ def donor_search(request):
         'blood_groups': blood_groups,
         'selected_blood_group': selected_blood_group,
         'compatible_groups': compatible_groups,
-        'selected_district_id': int(district_id) if district_id else None,
-        'selected_upazila_id': int(upazila_id) if upazila_id else None,
+        'selected_district_id': district_id,
+        'selected_upazila_id': upazila_id,
         'available_only': available_only,
         'eligible_only': eligible_only,
         'exact_match_only': exact_match_only,
