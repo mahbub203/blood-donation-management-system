@@ -1,20 +1,22 @@
 # LifeDrop BD — Blood Donation Management System (BDMS)
 
 [![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/mahbub203/blood-donation-management-system)
-[![Live Website](https://img.shields.io/badge/LIVE%20WEBSITE-ONLINE-success?style=for-the-badge&logo=cloudflare&logoColor=white)](https://chelsea-smooth-pushed-reception.trycloudflare.com)
-[![DBMS Showcase](https://img.shields.io/badge/DBMS%20SHOWCASE-LIVE%20DEMO-blue?style=for-the-badge&logo=postgresql&logoColor=white)](https://chelsea-smooth-pushed-reception.trycloudflare.com/analytics/dbms-showcase/)
+[![Live Website](https://img.shields.io/badge/LIVE%20PRODUCTION-ONLINE-success?style=for-the-badge&logo=render&logoColor=white)](https://lifedrop-bd.onrender.com)
+[![DBMS Showcase](https://img.shields.io/badge/DBMS%20SHOWCASE-LIVE%20DEMO-blue?style=for-the-badge&logo=postgresql&logoColor=white)](https://lifedrop-bd.onrender.com/analytics/dbms-showcase/)
 [![GitHub Repo](https://img.shields.io/badge/GITHUB-REPOSITORY-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/mahbub203/blood-donation-management-system)
 
 ---
 
-## 🌐 PUBLIC LIVE APPLICATION LINKS
+## 🌐 OFFICIAL PUBLIC LIVE APPLICATION LINKS
 
-> 🚀 **LIVE DEPLOYMENT IS ACTIVE AND RUNNING**  
-> Anyone can access the full functional platform online using the links below:
+> 🚀 **PRODUCTION DEPLOYMENT ON RENDER IS LIVE & FUNCTIONAL**  
+> Anyone can access the full functional web application online:
 
-- **🌍 Public Live Web App:** **[https://chelsea-smooth-pushed-reception.trycloudflare.com](https://chelsea-smooth-pushed-reception.trycloudflare.com)**
-- **🔬 DBMS Academic Evaluation Center:** **[https://chelsea-smooth-pushed-reception.trycloudflare.com/analytics/dbms-showcase/](https://chelsea-smooth-pushed-reception.trycloudflare.com/analytics/dbms-showcase/)**
-- **💻 Local Machine Access:** **[http://127.0.0.1:8000/](http://127.0.0.1:8000/)**
+- **🌍 Official Live Production Web App:** **[https://lifedrop-bd.onrender.com](https://lifedrop-bd.onrender.com)**
+- **🔬 Interactive DBMS Showcase & SQL Playground:** **[https://lifedrop-bd.onrender.com/analytics/dbms-showcase/](https://lifedrop-bd.onrender.com/analytics/dbms-showcase/)**
+- **🩸 Search Compatible Donors Live:** **[https://lifedrop-bd.onrender.com/donors/search/](https://lifedrop-bd.onrender.com/donors/search/)**
+- **🚨 View Emergency Blood Requests:** **[https://lifedrop-bd.onrender.com/requests/](https://lifedrop-bd.onrender.com/requests/)**
+- **💻 Local Machine Access (if running locally):** **[http://127.0.0.1:8000/](http://127.0.0.1:8000/)**
 
 ### 🔑 Demo Accounts (Pre-Seeded & Ready to Log In)
 All accounts use the password: `Admin@12345` / `Donor@12345` / `Requester@12345` / `Hospital@12345`
